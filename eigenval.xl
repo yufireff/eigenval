@@ -1,0 +1,67 @@
+OUTPUT_ARCH("mips:isa32")
+TARGET("elf32-littlemips")
+SEARCH_DIR(.)
+ENTRY(_start)
+GROUP(-lc -lgcc -lm)
+PROVIDE(_mem_size = 0x0010000);
+ 
+SECTIONS {
+ 
+ . =0xbfc00000; 
+ .text 0xbfc01000 :
+  {
+     * (.text);
+     * (.init)
+     * (.rel.sdata)
+     * (.fini)
+     * (.reginfo)
+  }
+ 
+ .data :
+  {
+     * (.data);
+  }
+ 
+  _gp = ALIGN(16);
+  .lit4 : { *(.lit4) }
+  .sdata : { *(.sdata) }
+  .rodata : { *(.rodata) }
+  . = ALIGN(8);
+  PROVIDE (edata = .);
+  _edata = .;
+ 
+  _fbss = .;
+  .sbss : { *(.sbss*) *(.scommon) *(*ABS*)}
+ 
+  .bss  :
+  {
+     _bss_start = .;
+     *(.bss);
+     *(COMMON)
+  }
+ 
+  . += 0x8000;
+  PROVIDE(__stack = ALIGN(8));
+  . += 0x10;
+ 
+ 
+  PROVIDE(end = .);
+  _end = .;
+ 
+ 
+ . =0xb8440000; 
+ .dsp0_text : 
+  {
+    *(.dsp0_text)
+  }
+ 
+ . =0xb8400000; 
+ .dsp0_data : 
+  {
+    *(.dsp0_data)
+  }
+ .dsp0_bss : 
+  {
+     *(.dsp0_bss )
+  }
+}

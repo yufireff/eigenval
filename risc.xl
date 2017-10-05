@@ -1,0 +1,43 @@
+OUTPUT_ARCH("mips:isa32")
+TARGET("elf32-littlemips")
+SECTIONS {
+ 
+ . =0xbfc01000; 
+ .text :
+  {
+    algorithms.*(.text);
+    algorithms.*(.text);
+    complex.*(.text);
+    complex.*(.text);
+    eig.*(.text);
+    eig.*(.text);
+    main.*(.text);
+    matrix.*(.text);
+    matrix.*(.text);
+    nvcom_01.*(.text);
+    real.*(.text);
+    real.*(.text);
+    settings.*(.text);
+    dsp.*(.text);
+    dsp.*(.text);
+  }
+ 
+ .data :
+  {
+    algorithms.*(.data);
+    algorithms.*(.data);
+    complex.*(.data);
+    complex.*(.data);
+    eig.*(.data);
+    eig.*(.data);
+    main.*(.data);
+    matrix.*(.data);
+    matrix.*(.data);
+    nvcom_01.*(.data);
+    real.*(.data);
+    real.*(.data);
+    settings.*(.data);
+    dsp.*(.data);
+    dsp.*(.data);
+  }
+}

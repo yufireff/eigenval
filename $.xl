@@ -1,0 +1,17 @@
+OUTPUT_ARCH("mips:isa32")
+TARGET("elf32-littlemips")
+SECTIONS {
+ 
+ . =0xbfc01000; 
+ .text :
+  {
+    dsp.*(.text);
+    dsp.*(.text);
+  }
+ 
+ .data :
+  {
+    dsp.*(.data);
+    dsp.*(.data);
+  }
+}
