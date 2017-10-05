@@ -77,6 +77,7 @@ int complex_matrix_mult_dsp(const CMatrix_t* a, const CMatrix_t* b, REAL_TYPE fa
 int complex_transp(const CMatrix_t* a, CMatrix_t* b, int create);
 
 int inv(const CMatrix_t* a, CMatrix_t* ainv);
+int inv_dsp(const CMatrix_t* a, CMatrix_t* ainv, int numDsp);
 
 void complex_zeros(int rows, int columns, CMatrix_t* a, int create);
 

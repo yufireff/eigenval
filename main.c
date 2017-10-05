@@ -4,7 +4,32 @@
 
 int main(void)
 {
-	/*float aData[2*3] =
+	float aData[3*3] =
+	{
+		1.5, 4.6, 7.4,
+		8.1, 0.4, 3.5,
+		3.3, 2.2, 1.7
+	};
+	float aImData[3*3] =
+	{
+		4.3, 9.5, 2.8,
+		3.3, 2.2, 1.7,
+		1.6, 4.2, 6.6
+	};
+	float bData[9], bImData[9];
+    float one = 1.0f;
+	CMatrix_t Ac, Bc;
+	Ac.numRows = 3;
+	Ac.numCols = 3;
+	Ac.pDataReal = (float*)aData;
+	Ac.pDataImag = (float*)aImData;
+	Bc.numRows = 3;
+	Bc.numCols = 3;
+	Bc.pDataReal = (float*)bData;
+	Bc.pDataImag = (float*)bImData;
+
+	inv_dsp(&Ac, &Bc, 0);
+    /*float aData[2*3] =
 	{
 		1.5, 4.6, 7.4,
 		8.1, 0.4, 3.5
@@ -61,6 +86,7 @@ int main(void)
 	complex_matrix_mult_dsp(&Ac, &Bc, 1.0f, 0.0f, &Cc, 0);
 
 	*/
+    /*
 #define N 20
 
 	REAL_TYPE realA[N*N] =
@@ -148,6 +174,6 @@ int main(void)
 
 	eig_symm_triag(&A, 0.01f, &S, &U);
 	//lambda = eig_symm_triag_only_one(&A, 0.01f, &U);
-
+*/
     return 0;
 }

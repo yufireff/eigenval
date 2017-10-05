@@ -3,12 +3,15 @@
 
 extern int RealMatrixMult;
 extern int ComplexMatrixMult;
+extern int ComplexMatrixInv;
+
 extern float g_pReal1[49*49];
 extern float g_pImag1[49*49];
 extern float g_pReal2[49*49];
 extern float g_pImag2[49*49];
 extern float g_pReal3[49*49];
 extern float g_pImag3[49*49];
+
 extern float g_Factor;
 extern float g_FactorIm;
 extern int g_nRows1 ;

@@ -12,7 +12,7 @@
 #define ALLOCATE_MATRIX 1
 #endif // PREALLOCATION
 
-#define DOUBLE
+//#define DOUBLE
 
 #ifdef DOUBLE
 #define REAL_TYPE double

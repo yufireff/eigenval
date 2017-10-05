@@ -297,3 +297,15 @@ __pycache__/
 *.btm.cs
 *.odx.cs
 *.xsd.cs
+
+*.lst
+*.o
+*.bin
+*.dis
+*.he
+*.full
+*.ldr
+*.sec
+*.dsk
+std*.txt
+TDnames.txt
