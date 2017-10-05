@@ -309,3 +309,7 @@ __pycache__/
 *.dsk
 std*.txt
 TDnames.txt
+
+mcsAge\.txt
+
+eigenval\.ini

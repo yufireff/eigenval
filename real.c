@@ -22,9 +22,9 @@ int is_zero(REAL_TYPE x)
 #ifdef DOUBLE
 	return (fabs(x) <= DBL_EPSILON) ? 1 : 0;
 #else
-	return (fabsà(x) <= FLT_EPSILON) ? 1 : 0;
+	return (fabsf(x) <= FLT_EPSILON) ? 1 : 0;
 #endif
-	
+
 }
 
 int is_zero_d(double x)
