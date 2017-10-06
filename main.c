@@ -4,31 +4,36 @@
 
 int main(void)
 {
-	float aData[3*3] =
+	float aData[4*4] =
 	{
-		1.5, 4.6, 7.4,
-		8.1, 0.4, 3.5,
-		3.3, 2.2, 1.7
+		1.5, 4.6, 7.4, 2.5,
+		8.1, 0.4, 3.5, 1.4,
+		3.3, 2.2, 1.7, 7.2,
+		1.6, 2.0, 2.7, 3.2
 	};
-	float aImData[3*3] =
+	float aImData[4*4] =
 	{
-		4.3, 9.5, 2.8,
-		3.3, 2.2, 1.7,
-		1.6, 4.2, 6.6
+		4.3, 9.5, 2.8, 0.5,
+		3.3, 2.2, 1.7, 7.2,
+		1.6, 4.2, 6.6, 3.4,
+		2.8, 3.0, 9.3, 5.5
 	};
-	float bData[9], bImData[9];
-    float one = 1.0f;
+	float bData[16], bImData[16];
+    //float one = 1.0f;
 	CMatrix_t Ac, Bc;
-	Ac.numRows = 3;
-	Ac.numCols = 3;
+	Ac.numRows = 4;
+	Ac.numCols = 4;
 	Ac.pDataReal = (float*)aData;
 	Ac.pDataImag = (float*)aImData;
-	Bc.numRows = 3;
-	Bc.numCols = 3;
+	Bc.numRows = 4;
+	Bc.numCols = 4;
 	Bc.pDataReal = (float*)bData;
 	Bc.pDataImag = (float*)bImData;
-
+#ifdef DSP_OPTIMIZATION
 	inv_dsp(&Ac, &Bc, 0);
+#else
+	inv(&Ac, &Bc);
+#endif
     /*float aData[2*3] =
 	{
 		1.5, 4.6, 7.4,

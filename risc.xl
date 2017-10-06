@@ -9,6 +9,8 @@ SECTIONS {
     algorithms.*(.text);
     complex.*(.text);
     complex.*(.text);
+    dsp.*(.text);
+    dsp.*(.text);
     eig.*(.text);
     eig.*(.text);
     main.*(.text);
@@ -18,8 +20,6 @@ SECTIONS {
     real.*(.text);
     real.*(.text);
     settings.*(.text);
-    dsp.*(.text);
-    dsp.*(.text);
   }
  
  .data :
@@ -28,6 +28,8 @@ SECTIONS {
     algorithms.*(.data);
     complex.*(.data);
     complex.*(.data);
+    dsp.*(.data);
+    dsp.*(.data);
     eig.*(.data);
     eig.*(.data);
     main.*(.data);
@@ -37,7 +39,5 @@ SECTIONS {
     real.*(.data);
     real.*(.data);
     settings.*(.data);
-    dsp.*(.data);
-    dsp.*(.data);
   }
 }
