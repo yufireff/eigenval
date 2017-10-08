@@ -79,10 +79,11 @@ ComplexMatrixInv:
 		move #0, r9.l ; обнуляем индекс цикла
 		; запоминаем адреса начала строки
 		addl r5.l, r3.l, r11.l
+		;nop
 		move r11.l, a2
 		addl r6.l, r3.l, r27.l
 		fadd r15.l, r13.l ; r13 = re^2 diag + im^2 diag. сложение перенесено сюда в целях оптимизации
-		move r27.l, a3
+		move r27.l, a3.l
 		move #1, i2.s
 		move #1, i3.s
 		fin r13.l, r13.l ; r13 = 1 / (re^2 diag + im^2 diag). деление перенесено также в целях оптимизации
@@ -98,31 +99,79 @@ ComplexMatrixInv:
 			fmpy r12.l, r18.l, r19.l ; re diag * im i
 			fmpy r16.l, r14.l, r21.l ; re i * im diag
 			fmpy r15.l, r13.l, r20.l ; делим действительную часть на норму
-			fsub r19.l, r21.l, r23.l ; числитель мнимой части
+			;fsub r19.l, r21.l, r23.l ; числитель мнимой части
+			fsub r21.l, r19.l, r23.l ; числитель мнимой части
 			move r20.l, (a2)+ ; пока вычитается числитель мнимой части, записываем действительную
 			fmpy r23.l, r13.l, r20.l ; делим мнимую часть на норму
 			incl r9.l, r9.l ; пока делится мнимая часть, инкрементим счётчик цикла
-			move r22.l, (a3)+ ; записываем мнимую часть в матрицу
-
-			; проверяем, не последняя ли это строка. если да, выходим досрочно
-			cmpl r1.l, r25.l
-			j.eq CMMEndLowerLeftMainLoop
-
-			; обнуляем остаток текущего столбца
-			; для этого вычитаем из всех следующих строк текущую с коэффициентом
-			; введём 2 адреса:
-			; а0, а1 - для вычитаемой строки. начинается с base + 2N * i
-			; a2, a3 - для текущей обнуляемой. начинается с base + 2N * j, j = [i+1, N]
-			; начало вычитаемой строки сохранено в регистрах r11, r27
-			move r11.l, a0
-			move r27, a1
-			
-			
+			move r20.l, (a3)+ ; записываем мнимую часть в матрицу
 			cmpl r9.l, r4.l ; проверяем условие выхода из цикла
 			j.ne CMMStartDiagonalOneLoop
-		incl r1.l, r1.l
+
+		; проверяем, не последняя ли это строка. если да, выходим досрочно
+		cmpl r1.l, r25.l
+		j.eq CMMEndLowerLeftMainLoop
+
+		; обнуляем остаток текущего столбца
+		; для этого вычитаем из всех следующих строк текущую с коэффициентом
+		; введём 2 адреса:
+		; а0, а1 - для вычитаемой строки. начинается с base + 2N * i
+		; a2, a3 - для текущей обнуляемой. начинается с base + 2N * j, j = [i+1, N]
+		; начало вычитаемой строки сохранено в регистрах r11, r27
+		; начинаем с первого ненулевого элемента
+		addl r1.l, r11.l
+		addl r1.l, r27.l
+		move #0, r30.l
+		inc r1.s, r30.s ; начинаем цикл с i + 1; было r1
+		CMMStartZeroingColumnOuterLoop1:
+			move r11.l, a0.l
+			move r27.l, a1.l
+			; задаём а2 и а3
+			mpuu r4, r30, r14
+			nop
+			addl r1.l, r14.l
+			nop
+			addl r5.l, r14.l, r15.l
+			addl r6.l, r14.l, r16.l
+			move r15.l, a2.l
+			move r16.l, a3.l
+			; запоминаем узловой элемент, на который умножается строка
+			move (a2), r14.l ; re 1
+			move (a3), r18.l ; im 1
+			; цикл по строке
+			move r30.l, r17.l
+			CMMStartZeroingColumnInnerLoop1:
+				; элемент вычитаемой строкиё
+				move (a0)+, r16.l ; re 2
+				move (a1)+, r26.l ; im 2
+				; текущий элемент строки
+				move (a2), r28.l ; re 3
+				move (a3), r24.l ; im 3
+				; произведение вычитаемого элемента на узловой
+				fmpy r14.l, r16.l, r19.l ; re1 * re2
+				fmpy r18.l, r26.l, r20.l ; im1 * im2
+				fmpy r14.l, r26.l, r21.l ; re1 * im2
+				fmpy r18.l, r16.l, r22.l ; re2 * im1
+				fsub r20.l, r19.l, r20.l; re1 * re2 - im1 * im2
+				fadd r21.l, r22.l, r22.l; re1 * im2 + re2 * im1
+				; вычитаем его из текущего элемента
+				fsub r20.l, r28.l, r20.l
+				fsub r22.l, r24.l, r22.l
+				; запоминаем результат
+				move r20.l, (a2)+
+				move r22.l, (a3)+
+
+				incl r17.l, r17.l ; выход из цикла вычитания строки
+				cmpl r17.l, r4.l
+				j.ne CMMStartZeroingColumnInnerLoop1
+
+			incl r30.l, r30.l ; выход из цикла обнуления столбца
+			cmpl r30.l, r0.l
+			j.ne CMMStartZeroingColumnOuterLoop1
+
+		incl r1.l, r1.l ; выход из цикла обнуления нижнего треугольника
 		cmpl r1.l, r0.l
 		j.ne CMMStartLowerLeftMainLoop
 	CMMEndLowerLeftMainLoop:
-	
+
 	stop
