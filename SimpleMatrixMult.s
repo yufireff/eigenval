@@ -140,10 +140,11 @@ ComplexMatrixMult:
 	stop
 
  .data
- g_pReal1: .space 64, 0; 9604, 0
- g_pImag1: .space 64, 0; 9604, 0
  g_pReal2: .space 128, 0; 19208, 0
  g_pImag2: .space 128, 0; 19208, 0
+
+ g_pReal1: .space 64, 0; 9604, 0
+ g_pImag1: .space 64, 0; 9604, 0
  g_pReal3: .space 64, 0; 9604, 0
  g_pImag3: .space 128, 0; 9604, 0
  g_Factor: .real 0

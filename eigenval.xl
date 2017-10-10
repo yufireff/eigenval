@@ -3,7 +3,7 @@ TARGET("elf32-littlemips")
 SEARCH_DIR(.)
 ENTRY(_start)
 GROUP(-lc -lgcc -lm)
-PROVIDE(_mem_size = 0x0010000);
+PROVIDE(_mem_size = 0x0000000);
  
 SECTIONS {
  

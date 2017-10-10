@@ -64,20 +64,25 @@ ComplexMatrixInv:
 	; возвращаем адреса на начальные значения
 	move r2.s, a2
 	move r3.s, a3
+	move #1, i2.s
+	move #1, i3.s
+
 
 	; приводим присоединенную матрицу к верхнетреугольному виду
 	move #0, r8.s ; счётчик строк i
-	sub #2, r0.s, r7.s ; r7.s = N - 2
+	sub #1, r0.s, r7.s ; r7.s = N - 2
 	move 0x40000000, r5.l ; литерал 2.0f
 	CMMStartLowerLeftMainLoop:
 		; запоминаем диагональный элемент
 		mpuu r8.s, r1.s, r4.l ; r4.s = 2N * i
 		add r4.s, r8.s, r6.s ; r6.s = 2N+i + i
 ; x 1 x 3 x x x 7 x 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 x 31
-		move r4.s, i2
-		move r4.s, i3
-		move (a2 + i2), r10.l ; r10 = re_diag
-		move (a3 + i3), r12.l ; r12 = im_diag
+		add r2.s, r6.s, r10.s
+		move r10.s, a2
+		add r3.s, r6.s, r10.s
+		move r10.s, a3
+		move (a2), r10.l ; r10 = re_diag
+		move (a3), r12.l ; r12 = im_diag
 
 		; вычисляем норму диагонального элемента
 		fmpy r10.l, r10.l, r1.l
@@ -97,11 +102,9 @@ ComplexMatrixInv:
 		add r2.s, r4.s, r14.s
 		add r3.s, r4.s, r15.s
 ; x x x x x x x 7 x 9 x 11 x 13 x 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 x 31
-		move #1, i2.s
-		move #1, i3.s
 
 		; делаем диагональный элемент равным 1
-		move #0, r16.s
+		move r8.s, r16.s
 ; x x x x x x x 7 x 9 x 11 x 13 x 15 x 17 18 19 20 21 22 23 24 25 26 27 28 29 x 31
 		CMMStartDiagonalOneLoop:
 			; делим текущий элемент на диагональный
@@ -116,8 +119,8 @@ ComplexMatrixInv:
 
 			fmpy r18.l, r12.l, r7.l ; re i * im diag
 			fmpy r20.l, r10.l, r9.l ; im_i * re_diag
-			fsub r9.l, r7.l ; r7 = re_i * im_diag - im_i * re_diag
-			fmpy r7.l, r3.l, r22.l; делим мнимую часть на норму
+			fsub r7.l, r9.l ; r9 = re_diag * im_i - im_diag * re_i
+			fmpy r9.l, r3.l, r22.l; делим мнимую часть на норму
 			move r22.l, (a3)+ ; записываем результат
 
 			inc r16.s, r16.s
@@ -135,19 +138,20 @@ ComplexMatrixInv:
 		; a2, a3 - для текущей обнуляемой. начинается с base + 2N * j, j = [i+1, N]
 		; начало вычитаемой строки сохранено в регистрах r14, r15
 		; начинаем с первого ненулевого элемента
-		add r8.s, r14.s
-		add r8.s, r15.s
 		inc r8.s, r22.s ; начинаем цикл с i + 1
 ; x x x x x x x 7 x 9 x 11 x 13 x 15 x 17 x 19 x 21 x 23 24 25 26 27 28 29 30 31
 		CMMStartZeroingColumnOuterLoop1:
-			move r14.s, a0
-			move r15.s, a1
+			add r14.s, r8.s, r24.s ; 2N*i + i
+			move r24.s, a0
+			add r15.s, r8.s, r24.s
+			move r24.s, a1
 			; задаём а2 и а3
-			add r4.s, r1.s, r24.s ; 2N*(i+1)
-			add r24.s, r2.s, r25.s
-			move r25.s, a2
-			add r24.s, r3.s, r25.s
-			move r25.s, a3
+			mpuu r22.s, r1.s, r24.l ; 2N*j
+			add r8.s, r24.s ; 2N*j + i
+			add r2.s, r24.s, r26.s
+			move r26.s, a2.s
+			add r3.s, r24.s, r26.s
+			move r26.s, a3.s
 			; запоминаем узловой элемент, на который умножается строка
 			move (a2), r24.l ; двойной move для чтения в нечётные регистры - чётные заняты...
 			move r24.l, r7.l ; re 1
@@ -155,10 +159,10 @@ ComplexMatrixInv:
 			move r24.l, r9.l ; im 1
 ; x x x x x x x x x x x 11 x 13 x 15 x 17 x 19 x 21 x 23 24 25 x 27 28 29 30 31
 			; цикл по строке
-			move r22.s, r24.s
+			move r8.s, r24.s
 ; x x x x x x x x x x x 11 x 13 x 15 x 17 x 19 x 21 x 23 x 25 x 27 28 29 30 31
 			CMMStartZeroingColumnInnerLoop1:
-				; элемент вычитаемой строкиё
+				; элемент вычитаемой строки
 				move (a0)+, r26.l ; не хватает чётных регистров, поэтому одно из чисел читаем в 2 приёма
 				move r26.l, r11.l ; re 2
 				move (a1)+, r30.l ; im 2
