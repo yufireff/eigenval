@@ -194,5 +194,92 @@ ComplexMatrixInv:
 		cmp r8.s, r0.s
 		j.ne CMMStartLowerLeftMainLoop
 	CMMEndLowerLeftMainLoop:
+; x 1 x 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31
 
+	; обнуляем верхний треугольник
+	; a0, a1 - адрес вычитаемой строки
+	; a2, a3 - адрес текущей строки
+	; занулять начинам с последнего столбца, i = N-1..1. строки от 0 до i-1
+	; по строке идём от i до 2N
+	dec r0.s, r4.s ; диагональный индекс i = N - 1
+	CMMStartUpperRightMainLoop:
+		dec r4.s, r5.s ; r5 = i - 1
+		; задаём а0 и а1
+		mpuu r4.s, r1.s, r6.l ; r6.s = i * 2N
+		add r6.s, r4.s, r7.s ; r7 = i*2N + i
+		add r2.s, r7.s, r8.s ; r8 = g_pReal2 + i*2N + i
+		add r3.s, r7.s, r9.s ; r9 = g_pImag2 + i*2N + i
+; x 1 x 3 x 5 x 7 x 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31
+
+		move #0, r10.s ; номер текущей строки j = 0..i-1
+		CMMStartZeroingColumnOuterLoop2:
+			move r8.s, a0.s
+			move r9.s, a1.s
+			; текущую строку начинаем с j*2N + i
+			mpuu r10.s, r1.s, r12.l ; r12.s = j * 2N
+			add r12.s, r4.s, r11.s; r11.s = j*2N + i
+; x 1 x 3 x 5 x 7 x 9 x 11 x 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31
+			add r2.s, r11.s, r14.s
+			move r14.s, a2 ; a2 = g_pReal2 + j*2N + i
+			add r3.s, r11.s, r14.s
+			move r14.s, a3 ; a3 = g_pImag2 + j*2N + i
+			; запоминаем узловой элемент
+			move (a2), r14.l ; re 1
+			move (a3), r16.l ; im 1
+; x 1 x 3 x 5 x 7 x 9 x 11 x 13 x 15 x 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31
+			move r4.s, r18.s ; счётчик по строке k = i..2N
+			CMMStartZeroingColumnInnerLoop2:
+				; запоминаем элемент вычитаемой строки
+				move (a0)+, r20.l ; re 2
+				move (a1)+, r22.l ; im 2
+; x 1 x 3 x 5 x 7 x 9 x 11 x 13 x 15 x 17 x 19 x 21 x 23 24 25 26 27 28 29 30 31
+				; умножаем его на узловой элемент
+				fmpy r14.l, r20.l, r1.l ; re1 * re2
+				fmpy r16.l, r22.l, r3.l ; im1 * im2
+				fmpy r14.l, r22.l, r5.l ; re1 * im2
+				fmpy r20.l, r16.l, r7.l ; re2 * im1
+				fsub r3.l, r1.l ; r1.l = re1*re2 - im1*im2
+				fadd r7.l, r5.l ; r5.l = re1 * im2 + re2 * im1
+				; вычитаем его из текущего элемента
+				move (a2), r24.l ; re 3
+				move (a3), r26.l ; im 3
+				fsub r1.l, r24.l ; re3 - ...
+				fsub r5.l, r26.l ; im3 - ...
+				; запоминаем результат
+				move r24.l, (a2)+
+				move r26.l, (a3)+
+				inc r18.s, r18.s ; выход из цикла вычитания строки
+				cmp r18.s, r1.s
+				j.ne CMMStartZeroingColumnInnerLoop2
+			inc r10.s, r10.s ; выход из цикла зануления столбца
+			cmp r10.s, r4.s
+			j.ne CMMStartZeroingColumnOuterLoop2
+		dec r4.s, r4.s ; выход из цикла по диагональным элементам
+		cmp #0, r4.s
+		j.ne CMMStartUpperRightMainLoop
+; x 1 x 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31
+
+	; обратная матрица найдена. копируем результат в буфер 1
+	move g_pReal1, a0.s
+	move g_pImag1, a1.s
+	add r2.s, r0.s, r2.s
+	add r3.s, r0.s, r3.s
+	move #0, r4.s ; i
+	CMMStartCopyRowLoop:
+		move r2.s, a2.s
+		move r3.s, a3.s
+		move #0, r6.s
+		CMMStartCopyColumnLoop:
+			move (a2)+, r8.l
+			move r8.l, (a0)+
+			move (a3)+, r8.l
+			move r8.l, (a1)+
+			inc r6.s, r6.s
+			cmp r6.s, r0.s
+			j.ne CMMStartCopyColumnLoop
+		add r2.s, r1.s, r2.s
+		add r3.s, r1.s, r3.s
+		inc r4.s, r4.s
+		cmp r4.s, r0.s
+		j.ne CMMStartCopyRowLoop
 	stop

@@ -1028,8 +1028,8 @@ int inv_dsp(const CMatrix_t* a, CMatrix_t* ainv, int numDsp)
 	g_nRows1 = a->numRows;
 	run_dsp(numDsp, DSP_ROUTINE_ADDR(ComplexMatrixInv));
 
-	memcpy(ainv->pDataReal, &(g_pReal3[0]), ainv->numRows * ainv->numCols * sizeof(float));
-	memcpy(ainv->pDataImag, &(g_pImag3[0]), ainv->numRows * ainv->numCols * sizeof(float));
+	memcpy(ainv->pDataReal, &(g_pReal1[0]), ainv->numRows * ainv->numCols * sizeof(float));
+	memcpy(ainv->pDataImag, &(g_pImag1[0]), ainv->numRows * ainv->numCols * sizeof(float));
 	return MATRIX_SUCCESS;
 
 }

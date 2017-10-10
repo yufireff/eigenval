@@ -394,11 +394,12 @@ void complex_triag(const CMatrix_t* A, Matrix_t* T, CMatrix_t* P)
 	Ad.pDataImag = buffer + 17 * MATRIX_MAX_SIZE + 16 * VECTOR_MAX_SIZE;
 	Pd.pDataReal = buffer + 18 * MATRIX_MAX_SIZE + 16 * VECTOR_MAX_SIZE;
 	Pd.pDataImag = buffer + 19 * MATRIX_MAX_SIZE + 16 * VECTOR_MAX_SIZE;
-#endif // DOUBLE
+#else // DOUBLE
 	Pd.pDataReal = P->pDataReal;
 	Pd.pDataImag = P->pDataImag;
 	Pd.numCols = P->numCols;
 	Pd.numRows = P->numRows;
+#endif // DOUBLE
 #endif // PREALLOCATION
 
 #ifndef DOUBLE
