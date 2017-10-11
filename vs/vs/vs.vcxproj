@@ -153,6 +153,7 @@
     <ClInclude Include="..\..\complex.h" />
     <ClInclude Include="..\..\eig.h" />
     <ClInclude Include="..\..\matrix.h" />
+    <ClInclude Include="..\..\MatrixSpecial.h" />
     <ClInclude Include="..\..\real.h" />
     <ClInclude Include="..\..\settings.h" />
   </ItemGroup>
@@ -162,6 +163,7 @@
     <ClCompile Include="..\..\eig.c" />
     <ClCompile Include="..\..\main.c" />
     <ClCompile Include="..\..\matrix.c" />
+    <ClCompile Include="..\..\MatrixSpecial.c" />
     <ClCompile Include="..\..\real.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

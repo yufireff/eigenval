@@ -4,7 +4,7 @@
 
 int main(void)
 {
-	float aData[4*4] =
+	/*float aData[4*4] =
 	{
 		1.5, 4.6, 7.4, 2.5,
 		8.1, 0.4, 3.5, 1.4,
@@ -33,7 +33,7 @@ int main(void)
 	inv_dsp(&Ac, &Bc, 0);
 #else
 	inv(&Ac, &Bc);
-#endif
+#endif*/
     /*float aData[2*3] =
 	{
 		1.5, 4.6, 7.4,
@@ -91,7 +91,7 @@ int main(void)
 	complex_matrix_mult_dsp(&Ac, &Bc, 1.0f, 0.0f, &Cc, 0);
 
 	*/
-    /*
+    
 #define N 20
 
 	REAL_TYPE realA[N*N] =
@@ -179,6 +179,6 @@ int main(void)
 
 	eig_symm_triag(&A, 0.01f, &S, &U);
 	//lambda = eig_symm_triag_only_one(&A, 0.01f, &U);
-*/
+
     return 0;
 }

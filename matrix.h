@@ -153,6 +153,4 @@ void double_complex_to_single_comlpex(const CMatrix_td* a, CMatrix_t* b, int cre
 
 void complex_free_d(CMatrix_td* a);
 
-int complex_matrix_mult_right_transp(const CMatrix_t* a, const CMatrix_t* b, REAL_TYPE factor_re, REAL_TYPE factor_im, CMatrix_t* res);
-
 #endif /* MATRIX_H_ */

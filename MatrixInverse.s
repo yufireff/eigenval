@@ -1,6 +1,4 @@
 .global ComplexMatrixInv
-.global g_pRealDoubleSize
-.global g_pImagDoubleSize
 
 .text
 
