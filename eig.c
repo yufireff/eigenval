@@ -1,4 +1,4 @@
-п»ї#include "eig.h"
+#include "eig.h"
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
@@ -8,10 +8,310 @@
 #include "settings.h"
 #include "algorithms.h"
 
+//void qr_simple_step(const CMatrix_t* A, CMatrix_t* Q, CMatrix_t* R)
+//{
+//	//function[Q, R] = QRfactor(A)
+//	//% код взят из интернета
+//	//% https://www.mathworks.com/matlabcentral/answers/169648-qr-factorization-using-householder-transformations
+//	//[m, n] = size(A);
+//	//R = A; %Start with R = A
+//	//Q = eye(m); %Set Q as the identity matrix
+//	//for k = 1:m - 1
+//	//	x = zeros(m, 1);
+//	//	x(k:m, 1) = R(k:m, k);
+//	//	g = norm(x);
+//	//	v = x; v(k) = x(k) + g;
+//	//	%Orthogonal transformation matrix that eliminates one element
+//	//		%below the diagonal of the matrix it is post - multiplying:
+//	//	s = norm(v);
+//	//	if s~= 0, w = v / s;
+//	//		u = 2 * R'*w;
+//	//		R = R - w*u'; %Product HR
+//	//		Q = Q - 2 * Q*(w*w'); %Product QR
+//	//	end
+//	//end
+//
+//	int N = A->numCols;
+//	int i, j, idx, k;
+//
+//	CMatrix_t x;
+//	REAL_TYPE g, s;
+//	CMatrix_t v;
+//	CMatrix_t u;
+//	CMatrix_t Rt;
+//	CMatrix_t ut;
+//	CMatrix_t wut;
+//	CMatrix_t wt;
+//	CMatrix_t wwt;
+//	CMatrix_t Qwwt;
+//
+//	x.numRows = N;
+//	x.numCols = 1;
+//	x.pDataReal = (REAL_TYPE*)malloc(N * sizeof(REAL_TYPE));
+//	x.pDataImag = (REAL_TYPE*)malloc(N * sizeof(REAL_TYPE));
+//
+//	v.numRows = N;
+//	v.numCols = 1;
+//	v.pDataReal = (REAL_TYPE*)malloc(N * sizeof(REAL_TYPE));
+//	v.pDataImag = (REAL_TYPE*)malloc(N * sizeof(REAL_TYPE));
+//
+//	u.numRows = N;
+//	u.numCols = 1;
+//	u.pDataReal = (REAL_TYPE*)malloc(N * sizeof(REAL_TYPE));
+//	u.pDataImag = (REAL_TYPE*)malloc(N * sizeof(REAL_TYPE));
+//
+//	Rt.numCols = N;
+//	Rt.numRows = N;
+//	Rt.pDataReal = (REAL_TYPE*)malloc(N *  N * sizeof(REAL_TYPE));
+//	Rt.pDataImag = (REAL_TYPE*)malloc(N * N * sizeof(REAL_TYPE));
+//
+//	ut.numRows = 1;
+//	ut.numCols = N;
+//	ut.pDataReal = (REAL_TYPE*)malloc(N  * sizeof(REAL_TYPE));
+//	ut.pDataImag = (REAL_TYPE*)malloc(N  * sizeof(REAL_TYPE));
+//
+//	wut.numCols = N;
+//	wut.numRows = N;
+//	wut.pDataReal = (REAL_TYPE*)malloc(N * N * sizeof(REAL_TYPE));
+//	wut.pDataImag = (REAL_TYPE*)malloc(N * N * sizeof(REAL_TYPE));
+//
+//	wt.numRows = 1;
+//	wt.numCols = N;
+//	wt.pDataReal = (REAL_TYPE*)malloc(N * sizeof(REAL_TYPE));
+//	wt.pDataImag = (REAL_TYPE*)malloc(N * sizeof(REAL_TYPE));
+//
+//
+//	wwt.numCols = N;
+//	wwt.numRows = N;
+//	wwt.pDataReal = (REAL_TYPE*)malloc(N * N * sizeof(REAL_TYPE));
+//	wwt.pDataImag = (REAL_TYPE*)malloc(N * N * sizeof(REAL_TYPE));
+//
+//	Qwwt.numCols = N;
+//	Qwwt.numRows = N;
+//	Qwwt.pDataReal = (REAL_TYPE*)malloc(N * N * sizeof(REAL_TYPE));
+//	Qwwt.pDataImag = (REAL_TYPE*)malloc(N * N * sizeof(REAL_TYPE));
+//
+//
+//	// R = A; %Start with R = A
+//	//	Q = eye(m); %Set Q as the identity matrix
+//	for (i = 0; i < N; ++i)
+//	{
+//		for (j = 0; j < N; ++j)
+//		{
+//			idx = i * A->numCols + j;
+//			Q->pDataReal[idx] = (i == j) ? 1.0f : 0.0f;
+//			Q->pDataImag[idx] = 0.0;
+//			R->pDataReal[idx] = A->pDataReal[idx];
+//			R->pDataImag[idx] = A->pDataImag[idx];
+//		}
+//	}
+//
+//	//	for k = 1:m - 1
+//	for (k = 0; k < N - 1; ++k)
+//	{
+//		// x = zeros(m, 1);
+//		for (idx = 0; idx < N; ++idx)
+//		{
+//			x.pDataReal[idx] = 0.0;
+//			x.pDataImag[idx] = 0.0;
+//		}
+//
+//		// x(k:m, 1) = R(k:m, k);
+//		for (idx = k; idx < N; ++idx)
+//		{
+//			x.pDataReal[idx] = R->pDataReal[idx * N + k];
+//			x.pDataImag[idx] = R->pDataImag[idx * N + k];
+//		}
+//
+//		// g = norm(x);
+//		cnorm2(x.pDataReal, x.pDataImag, &g, 1, N);
+//		g = sq_rt(g);
+//
+//		// v = x; v(k) = x(k) + g;
+//		for (idx = 0; idx < N; ++idx)
+//		{
+//			v.pDataReal[idx] = x.pDataReal[idx] + g * (idx == k);
+//			v.pDataImag[idx] = x.pDataImag[idx];
+//		}
+//
+//		// s = norm(v);
+//		cnorm2(v.pDataReal, v.pDataImag, &s, 1, N);
+//		s = sq_rt(s);
+//
+//		// if s~= 0, w = v / s;
+//		// здесь w это v
+//		if (s < 1e-6)
+//			continue;
+//		for (idx = 0; idx < N; ++idx)
+//		{
+//			v.pDataReal[idx] /= s;
+//			v.pDataImag[idx] /= s;
+//		}
+//
+//		// u = 2 * R'*w;
+//		complex_transp(R, &Rt, 0);
+//		complex_matrix_mult(&Rt, &v, 2.0f, 0.0f, &u);
+//
+//		// R = R - w*u'; %Product HR
+//		complex_transp(&u, &ut, 0);
+//		complex_matrix_mult(&v, &ut, 1.0f, 0.0f, &wut);
+//		for (i = 0; i < N; ++i)
+//		{
+//			for (j = 0; j < N; ++j)
+//			{
+//				idx = i * N + j;
+//				R->pDataReal[idx] -= wut.pDataReal[idx];
+//				R->pDataImag[idx] -= wut.pDataImag[idx];
+//			}
+//		}
+//
+//		// Q = Q - 2 * Q*(w*w'); %Product QR
+//		complex_transp(&v, &wt, 0);
+//		complex_matrix_mult(&v, &wt, 1.0f, 0.0f, &wwt);
+//		complex_matrix_mult(Q, &wwt, 2.0f, 0.0f, &Qwwt);
+//
+//		for (i = 0; i < N; ++i)
+//		{
+//			for (j = 0; j < N; ++j)
+//			{
+//				idx = i * N + j;
+//				Q->pDataReal[idx] -= Qwwt.pDataReal[idx];
+//				Q->pDataImag[idx] -= Qwwt.pDataImag[idx];
+//			}
+//		}
+//	}
+//
+//	free(x.pDataReal);
+//	free(x.pDataImag);
+//
+//	free(v.pDataReal);
+//	free(v.pDataImag);
+//
+//	free(u.pDataReal);
+//	free(u.pDataImag);
+//
+//	free(Rt.pDataReal);
+//	free(Rt.pDataImag);
+//
+//	free(ut.pDataReal);
+//	free(ut.pDataImag);
+//
+//	free(wut.pDataReal);
+//	free(wut.pDataImag);
+//
+//	free(wt.pDataReal);
+//	free(wt.pDataImag);
+//
+//	free(wwt.pDataReal);
+//	free(wwt.pDataImag);
+//
+//	free(Qwwt.pDataReal);
+//	free(Qwwt.pDataImag);
+//}
+//
+//void eig(const CMatrix_t* A, CMatrix_t* e, CMatrix_t* ev)
+//{
+//	int N = A->numCols, i, j;
+//	CMatrix_t acopy;
+//	CMatrix_t Q;
+//	CMatrix_t R;
+//	CMatrix_t Qt;
+//	CMatrix_t AQ;
+//	CMatrix_t evcopy;
+//
+//	acopy.numRows = N;
+//	acopy.numCols = N;
+//	acopy.pDataReal = (REAL_TYPE*)malloc(N * N * sizeof(REAL_TYPE));
+//	acopy.pDataImag = (REAL_TYPE*)malloc(N * N * sizeof(REAL_TYPE));
+//	memcpy(acopy.pDataReal, A->pDataReal, N * N * sizeof(REAL_TYPE));
+//	memcpy(acopy.pDataImag, A->pDataImag, N * N * sizeof(REAL_TYPE));
+//
+//	Q.numRows = N;
+//	Q.numCols = N;
+//	Q.pDataReal = (REAL_TYPE*)malloc(N * N * sizeof(REAL_TYPE));
+//	Q.pDataImag = (REAL_TYPE*)malloc(N * N * sizeof(REAL_TYPE));
+//	memset(Q.pDataReal, 0, N * N * sizeof(REAL_TYPE));
+//	memset(Q.pDataImag, 0, N * N * sizeof(REAL_TYPE));
+//
+//	R.numRows = N;
+//	R.numCols = N;
+//	R.pDataReal = (REAL_TYPE*)malloc(N * N * sizeof(REAL_TYPE));
+//	R.pDataImag = (REAL_TYPE*)malloc(N * N * sizeof(REAL_TYPE));
+//	memset(R.pDataReal, 0, N * N * sizeof(REAL_TYPE));
+//	memset(R.pDataImag, 0, N * N * sizeof(REAL_TYPE));
+//
+//	Qt.numRows = N;
+//	Qt.numCols = N;
+//	Qt.pDataReal = (REAL_TYPE*)malloc(N * N * sizeof(REAL_TYPE));
+//	Qt.pDataImag = (REAL_TYPE*)malloc(N * N * sizeof(REAL_TYPE));
+//	memset(Qt.pDataReal, 0, N * N * sizeof(REAL_TYPE));
+//	memset(Qt.pDataImag, 0, N * N * sizeof(REAL_TYPE));
+//
+//	AQ.numRows = N;
+//	AQ.numCols = N;
+//	AQ.pDataReal = (REAL_TYPE*)malloc(N * N * sizeof(REAL_TYPE));
+//	AQ.pDataImag = (REAL_TYPE*)malloc(N * N * sizeof(REAL_TYPE));
+//	memset(AQ.pDataReal, 0, N * N * sizeof(REAL_TYPE));
+//	memset(AQ.pDataImag, 0, N * N * sizeof(REAL_TYPE));
+//
+//	evcopy.numRows = N;
+//	evcopy.numCols = N;
+//	evcopy.pDataReal = (REAL_TYPE*)malloc(N * N * sizeof(REAL_TYPE));
+//	evcopy.pDataImag = (REAL_TYPE*)malloc(N * N * sizeof(REAL_TYPE));
+//
+//	for (i = 0; i < N; ++i)
+//	{
+//		for (j = 0; j < N; ++j)
+//		{
+//			evcopy.pDataReal[i * N + j] = (i == j) ? 1.0f : 0.0f;
+//			evcopy.pDataImag[i * N + j] = 0.0f;
+//		}
+//	}
+//
+//	/*for i = 1 : Nsteps
+//		[Q, ~] = QRfactor_s(A);
+//		A = Q' * A * Q;
+//	end*/
+//	for (i = 0; i < N; ++i)
+//	{
+//		qr_simple_step(&acopy, &Q, &R);
+//		complex_matrix_mult(&acopy, &Q, 1.0f, 0.0f, &AQ);
+//		complex_transp(&Q, &Qt, 0);
+//		complex_matrix_mult(&Qt, &AQ, 1.0f, 0.0f, &acopy);
+//		complex_matrix_mult(&evcopy, &Q, 1.0f, 0.0f, ev);
+//		memcpy(evcopy.pDataReal, ev->pDataReal, N * N * sizeof(REAL_TYPE));
+//		memcpy(evcopy.pDataImag, ev->pDataImag, N * N * sizeof(REAL_TYPE));
+//	}
+//
+//	for (i = 0; i < N; ++i)
+//	{
+//		e->pDataReal[i] = A->pDataReal[i * N + i];
+//		e->pDataImag[i] = A->pDataImag[i * N + i];
+//	}
+//
+//	free(acopy.pDataReal);
+//	free(acopy.pDataImag);
+//
+//	free(Q.pDataReal);
+//	free(Q.pDataImag);
+//
+//	free(R.pDataReal);
+//	free(R.pDataImag);
+//
+//	free(Qt.pDataReal);
+//	free(Qt.pDataImag);
+//
+//	free(AQ.pDataReal);
+//	free(AQ.pDataImag);
+//
+//	free(evcopy.pDataReal);
+//	free(evcopy.pDataImag);
+//}
+
 void complex_triag(const CMatrix_t* A, Matrix_t* T, CMatrix_t* P)
-// РўСЂРµС…РґРёР°РіРѕРЅР°Р»РёР·Р°С†РёСЏ РҐР°СѓСЃС…РѕР»РґРµСЂР°
+// Трехдиагонализация Хаусхолдера
 //////////////////////////////
-//// РР· СЃС‚Р°С‚СЊРё: Joachim Kopp. Efficient numerical diagonalization of
+//// Из статьи: Joachim Kopp. Efficient numerical diagonalization of
 //// hermitian matrices [http://arXiv.org/abs/physics/0610206v3]
 //////////////////////////////////////
 //	function [T, P] = triag(A)
@@ -212,7 +512,7 @@ void complex_triag(const CMatrix_t* A, Matrix_t* T, CMatrix_t* P)
 }
 
 void givens_rotation_real(REAL_TYPE a, REAL_TYPE b, REAL_TYPE* c, REAL_TYPE* s)
-//	Р’СЂР°С‰РµРЅРёСЏ Р“РёРІРµРЅСЃР°
+//	Вращения Гивенса
 //	function [c,s] = giv(a,b)
 //		if abs(b) == 0
 //			c = 1;
@@ -255,8 +555,8 @@ void givens_rotation_real(REAL_TYPE a, REAL_TYPE b, REAL_TYPE* c, REAL_TYPE* s)
 }
 
 void qr_step_symm_real(const Matrix_t* T, Matrix_t* Q, Matrix_t* R)
-// РќРµСЏРІРЅС‹Р№ СЃРёРјРјРµС‚СЂРёС‡РЅС‹Р№ QR - С€Р°Рі РЅРµРїСЂРёРІРѕРґРёРјРѕР№
-// С‚СЂРµС…РґРёР°РіРѕРЅР°Р»СЊРЅРѕР№ РјР°С‚СЂРёС†С‹ СЃРѕ СЃРґРІРёРіРѕРј РЈРёР»РєРёРЅСЃРѕРЅР°
+// Неявный симметричный QR - шаг неприводимой
+// трехдиагональной матрицы со сдвигом Уилкинсона
 //function [Q, T] = qr_step(T)
 //	n = size(T,2);
 //	if n == 1
@@ -375,9 +675,9 @@ void qr_step_symm_real(const Matrix_t* T, Matrix_t* Q, Matrix_t* R)
 
 void qr_symm_real(const Matrix_t* T, REAL_TYPE tol, Matrix_t* U, Matrix_t* D)
 //////////////////////////////////////////////////////////////////////
-// РЎРёРјРјРµС‚СЂРёС‡РЅС‹Р№ QR-Р°Р»РіРѕСЂРёС‚Рј
-// РСЃС‚РѕС‡РЅРёРє: Р“РѕР»СѓР± Р”Р¶., Р’Р°РЅ Р›РѕСѓРЅ Р§. РњР°С‚СЂРёС‡РЅС‹Рµ РІС‹С‡РёСЃР»РµРЅРёСЏ: РџРµСЂ. СЃ Р°РЅРіР». -
-//              Рњ.: РњРёСЂ, 1999. - 548 СЃ. (СЃС‚СЂ. 380 )
+// Симметричный QR-алгоритм
+// Источник: Голуб Дж., Ван Лоун Ч. Матричные вычисления: Пер. с англ. -
+//              М.: Мир, 1999. - 548 с. (стр. 380 )
 //////////////////////////////////////////////////////////////////////
 //function [U,D] = QRsymm(T, tol)
 //	n = size(T,1);
@@ -439,7 +739,7 @@ void qr_symm_real(const Matrix_t* T, REAL_TYPE tol, Matrix_t* U, Matrix_t* D)
 	{
 		fl = 0;
 		//		for i = q-1:-1:1
-		for (i = q-1; i > 0; --i) // Р·РґРµСЃСЊ РёРЅРґРµРєСЃС‹ Matlab
+		for (i = q-1; i > 0; --i) // здесь индексы Matlab
 		{
 			//			if (abs(T(i+1,i)) <= tol*(abs(T(i,i)) + abs(T(i+1,i+1))))
 			if (f_abs(Tcopy.pData[i*n + i-1]) <=
@@ -503,9 +803,9 @@ void qr_symm_real(const Matrix_t* T, REAL_TYPE tol, Matrix_t* U, Matrix_t* D)
 }
 
 void eig_symm_triag(const CMatrix_t* A, REAL_TYPE tol, Matrix_t* S, CMatrix_t* U)
-// РЅР°С…РѕР¶РґРµРЅРёРµ СЃРѕР±СЃС‚РІРµРЅРЅС‹С… Р·РЅР°С‡РµРЅРёР№ РєРѕРјРїР»РµРєСЃРЅРѕР№ РјР°С‚СЂРёС†С‹ Рђ СЃ С‚РѕС‡РЅРѕС‡С‚СЊСЋ tol
-// S - РІРµРєС‚РѕСЂ-СЃС‚СЂРѕРєР° РїРѕР»СѓС‡РёРІС€РёС…СЃСЏ СЃРѕР±СЃС‚РІРµРЅРЅС‹С… Р·РЅР°С‡РµРЅРёР№
-// U - РјР°С‚СЂРёС†Р° СЃРѕР±СЃС‚РІРµРЅРЅС‹С… РІРµРєС‚РѕСЂРѕРІ
+// нахождение собственных значений комплексной матрицы А с точночтью tol
+// S - вектор-строка получившихся собственных значений
+// U - матрица собственных векторов
 //function [U, S] = app_eigen(A)
 //	[T, P] = triag(A);
 //	[Q, S] = QRsymm(T, tol);
@@ -513,7 +813,7 @@ void eig_symm_triag(const CMatrix_t* A, REAL_TYPE tol, Matrix_t* S, CMatrix_t* U
 //end
 {
 	int n = A->numRows, i;
-	Matrix_t T, Q, Ss; // Q РЅРµ СѓРґР°Р»СЏС‚СЊ! Сѓ РЅРµС‘ РѕР±С‰РёР№ Р±СѓС„РµСЂ СЃ Qcmpl!
+	Matrix_t T, Q, Ss; // Q не удалять! у неё общий буфер с Qcmpl!
 	CMatrix_t P, Qcmpl, Pt;
 	int indices[VECTOR_MAX_SIZE];
 #ifdef TEST_RESULT
@@ -521,7 +821,7 @@ void eig_symm_triag(const CMatrix_t* A, REAL_TYPE tol, Matrix_t* S, CMatrix_t* U
 #endif // TEST_RESULT
 
 #ifdef PREALLOCATION
-	static REAL_TYPE buffer[MATRIX_MAX_SIZE * (3 + 3*2 - 1)]; // РјР°С‚СЂРёС†С‹ Q Рё Qcmpl РёРјРµСЋС‚ РѕР±С‰РёР№ Р±СѓС„РµСЂ
+	static REAL_TYPE buffer[MATRIX_MAX_SIZE * (3 + 3*2 - 1)]; // матрицы Q и Qcmpl имеют общий буфер
 	T.pData = buffer;
 	Q.pData = buffer + MATRIX_MAX_SIZE;
 	Ss.pData = buffer + 2 * MATRIX_MAX_SIZE;
@@ -563,7 +863,7 @@ void eig_symm_triag(const CMatrix_t* A, REAL_TYPE tol, Matrix_t* S, CMatrix_t* U
 #ifndef PREALLOCATION
 	Qcmpl.pDataReal = Q.pData;
 	Qcmpl.pDataImag = (REAL_TYPE*)malloc(n * n * sizeof(REAL_TYPE));
-	Q.pData = NULL; // РЅР° РІСЃСЏРєРёР№ СЃР»СѓС‡Р°Р№, РµСЃР»Рё РєС‚Рѕ-С‚Рѕ РїРѕРїС‹С‚Р°РµС‚СЃСЏ РѕСЃРІРѕР±РѕРґРёС‚СЊ Q
+	Q.pData = NULL; // на всякий случай, если кто-то попытается освободить Q
 #endif
 	memset(Qcmpl.pDataImag, 0, n * n * sizeof(REAL_TYPE));
 	complex_transp(&P, &Pt, 1);
@@ -598,3 +898,76 @@ void eig_symm_triag(const CMatrix_t* A, REAL_TYPE tol, Matrix_t* S, CMatrix_t* U
 	real_free(&Ss);
 	complex_free(&P);
 }
+
+ /*
+REAL_TYPE eig_symm_triag_only_one(const CMatrix_t* A, REAL_TYPE tol, CMatrix_t* U)
+// нахождение собственных значений комплексной матрицы А с точночтью tol
+// S - вектор-строка получившихся собственных значений
+// U - матрица собственных векторов
+//function [U, S] = app_eigen(A)
+//	[T, P] = triag(A);
+//	[Q, S] = QRsymm(T, tol);
+//	U = (Q'*P)';
+//end
+{
+	int n = A->numRows, i;
+	Matrix_t T, Q, Ss, S; // Q не удалять! у неё общий буфер с Qcmpl!
+	CMatrix_t P, Qcmpl, Qt, Ut;
+	REAL_TYPE maxEig;
+	size_t maxPos;
+
+#ifdef PREALLOCATION
+	static REAL_TYPE buffer[MATRIX_MAX_SIZE * (3 + 4 * 2 - 1) + VECTOR_MAX_SIZE]; // матрицы Q и Qcmpl имеют общий буфер
+	T.pData = buffer;
+	Q.pData = buffer + MATRIX_MAX_SIZE;
+	Ss.pData = buffer + 2 * MATRIX_MAX_SIZE;
+	P.pDataReal = buffer + 3 * MATRIX_MAX_SIZE;
+	P.pDataImag = buffer + 4 * MATRIX_MAX_SIZE;
+	Qcmpl.pDataReal = Q.pData;
+	Qcmpl.pDataImag = buffer + 5 * MATRIX_MAX_SIZE;
+	Qt.pDataReal = buffer + 6 * MATRIX_MAX_SIZE;
+	Qt.pDataImag = buffer + 7 * MATRIX_MAX_SIZE;
+	Ut.pDataReal = buffer + 8 * MATRIX_MAX_SIZE;
+	Ut.pDataImag = buffer + 9 * MATRIX_MAX_SIZE;
+	S.pData = buffer + 10 * MATRIX_MAX_SIZE;
+#endif // PREALLOCATION
+
+	real_new(n, n, &T);
+	real_new(n, n, &Q);
+	real_new(n, n, &Ss);
+	real_new(n, 1, &S);
+	complex_new(n, n, &P);
+
+	complex_triag(A, &T, &P);
+
+	qr_symm_real(&T, tol, &Q, &Ss);
+	// S = diag(Ss);
+	for (i = 0; i < n; ++i)
+		S.pData[i] = Ss.pData[i*n + i];
+
+	Qcmpl.numCols = n;
+	Qcmpl.numRows = n;
+#ifndef PREALLOCATION
+	Qcmpl.pDataReal = Q.pData;
+	Qcmpl.pDataImag = (REAL_TYPE*)malloc(n * n * sizeof(REAL_TYPE));
+	Q.pData = NULL; // на всякий случай, если кто-то попытается освободить Q
+#endif
+	memset(Qcmpl.pDataImag, 0, n * n * sizeof(REAL_TYPE));
+	complex_transp(&Qcmpl, &Qt, 1);
+
+	complex_new(n, n, &Ut);
+	complex_matrix_mult(&Qt, &P, 1.0f, 0.0f, &Ut);
+	complex_transp(&Ut, U, 0);
+
+	maxPos = find_max(S.pData, S.numRows, &maxEig);
+	complex_partial_copy(U, 0, maxPos, U->numCols, 1, U, 0, 0);
+
+	real_free(&T);
+	complex_free(&Qcmpl);
+	complex_free(&Qt);
+	complex_free(&Ut);
+	real_free(&Ss);
+	complex_free(&P);
+	return maxEig;
+}
+*/
