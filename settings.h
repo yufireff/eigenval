@@ -21,7 +21,7 @@
 #endif // DOUBLE
 
 #ifndef WIN32
-//#define DSP_OPTIMIZATION
+#define DSP_OPTIMIZATION
 #endif // WIN32
 
 //#define TEST_RESULT

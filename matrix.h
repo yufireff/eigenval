@@ -70,14 +70,11 @@ void cdot_prod(REAL_TYPE * a_real, REAL_TYPE * a_imag, REAL_TYPE * b_real, REAL_
 
 void cnorm2(REAL_TYPE * a_real, REAL_TYPE * a_imag, REAL_TYPE * norm, uint32_t dir, uint32_t len);
 
-
 int complex_matrix_mult(const CMatrix_t* a, const CMatrix_t* b, REAL_TYPE factor_re, REAL_TYPE factor_im, CMatrix_t* res);
-int complex_matrix_mult_dsp(const CMatrix_t* a, const CMatrix_t* b, REAL_TYPE factor_re, REAL_TYPE factor_im, CMatrix_t* res, int numDsp);
 
 int complex_transp(const CMatrix_t* a, CMatrix_t* b, int create);
 
 int inv(const CMatrix_t* a, CMatrix_t* ainv);
-int inv_dsp(const CMatrix_t* a, CMatrix_t* ainv, int numDsp);
 
 void complex_zeros(int rows, int columns, CMatrix_t* a, int create);
 
@@ -116,8 +113,6 @@ int real_partial_copy(const Matrix_t* source, int source_start_row, int source_s
 int real_transp(const Matrix_t* a, Matrix_t* b, int create);
 
 int real_matrix_mult(const Matrix_t* a, const Matrix_t* b, REAL_TYPE factor, Matrix_t* res);
-
-int real_matrix_mult_dsp(const Matrix_t* a, const Matrix_t* b, REAL_TYPE factor, Matrix_t* res, int numDsp);
 
 int real_to_complex(const Matrix_t* real, CMatrix_t* compl, int create);
 

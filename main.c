@@ -1,6 +1,8 @@
 #include "matrix.h"
 #include "eig.h"
 #include "settings.h"
+#include "MatrixSpecial.h"
+#include "MatrixDsp.h"
 
 int main(void)
 {
@@ -17,9 +19,9 @@ int main(void)
 		3.5, 2.1, 1.7, 7.2,
 		1.6, 4.2, 6.6, 3.4,
 		2.8, 3.0, 9.3, 5.5
-	};
+	}
 	float bData[16], bImData[16];
-    //float one = 1.0f;
+	//float one = 1.0f;
 	CMatrix_t Ac, Bc;
 	Ac.numRows = 4;
 	Ac.numCols = 4;
@@ -34,10 +36,11 @@ int main(void)
 #else
 	inv(&Ac, &Bc);
 #endif*/
-    /*float aData[2*3] =
+	float aData[3*2] =
 	{
-		1.5, 4.6, 7.4,
-		8.1, 0.4, 3.5
+		1.5, 4.6,
+		7.4, 8.1,
+		0.4, 3.5
 	};
 
 	float bData[3*4] =
@@ -47,7 +50,7 @@ int main(void)
 		4.1, 0.3, 6.0, 2.8
 	};
 
-	float aImData[2*3] =
+/*	float aImData[2*3] =
 	{
 		2.6, 1.3, 0.8,
 		5.8, 9.2, 7.3
@@ -58,14 +61,14 @@ int main(void)
 		0.3, 2.7, 0.5, 4.2,
 		2.2, 4.5, 8.1, 0.4,
 		1.6, 4.2, 6.6, 2.8
-	};
+	};*/
 
-	float cData[2*4], cImData[2*4];
+	float cData[2*4]; //, cImData[2*4];
 
-	CMatrix_t Ac, Bc, Cc;
 	Matrix_t A, B, C;
-	Ac.numRows = 2;
-	Ac.numCols = 3;
+	/*CMatrix_t Ac, Bc, Cc;
+	Ac.numRows = 3;
+	Ac.numCols = 2;
 	Ac.pDataReal = aData;
 	Ac.pDataImag = aImData;
 	Bc.numRows = 3;
@@ -75,10 +78,10 @@ int main(void)
 	Cc.numRows = 2;
 	Cc.numCols = 4;
 	Cc.pDataReal = cData;
-	Cc.pDataImag = cImData;
+	Cc.pDataImag = cImData;*/
 
-	A.numRows = 2;
-	A.numCols = 3;
+	A.numRows = 3;
+	A.numCols = 2;
 	A.pData = aData;
 	B.numRows = 3;
 	B.numCols = 4;
@@ -87,10 +90,11 @@ int main(void)
 	C.numCols = 4;
 	C.pData = cData;
 
-    //real_matrix_mult_dsp(&A, &B, 1.2f, &C, 0);
-	complex_matrix_mult_dsp(&Ac, &Bc, 1.0f, 0.0f, &Cc, 0);
+	real_matrix_mult_left_transp_dsp(&A, &B, 1.2f, &C, 0);
+	//real_matrix_mult_dsp(&A, &B, 1.2f, &C, 0);
+	//complex_matrix_mult_dsp(&Ac, &Bc, 1.0f, 0.0f, &Cc, 0);
 
-	*/
+	/*
 
 #define N 20
 
@@ -179,6 +183,6 @@ int main(void)
 
 	eig_symm_triag(&A, 0.01f, &S, &U);
 	//lambda = eig_symm_triag_only_one(&A, 0.01f, &U);
-
+*/
     return 0;
 }
