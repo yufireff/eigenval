@@ -123,6 +123,8 @@ int real_to_complex(const Matrix_t* real, CMatrix_t* compl, int create);
 
 void complex_swap_columns(CMatrix_t* m, int* new_indices);
 
+// специальные функции для работы с матрицами double
+
 void single_to_double(const CMatrix_t * S, CMatrix_td *D, int create);
 
 int complex_new_d(int rows, int columns, CMatrix_td* a);

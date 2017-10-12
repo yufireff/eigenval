@@ -1,17 +1,17 @@
 SEARCH_DIR(.)
 SECTIONS {
-DSP_LMA_  = . ;
+dsp_LMA_  = . ;
  
- .DSP_text 0x00000000 : AT(DSP_LMA_ )
+ .dsp_text 0x00000000 : AT(dsp_LMA_ )
   {
     *(.text);
   }
  
- .DSP_data 0x00000000 : AT(DSP_LMA_  + SIZEOF(.DSP_text))
+ .dsp_data 0x00000000 : AT(dsp_LMA_  + SIZEOF(.dsp_text))
   {
     *(.data);
   }
- .DSP_bss :
+ .dsp_bss :
   {
     *(COMMON)
   }

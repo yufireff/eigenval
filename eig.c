@@ -44,8 +44,8 @@ void complex_triag(const CMatrix_t* A, Matrix_t* T, CMatrix_t* P)
 // end
 {
 	int i, create = 1;
-	//            m     v  v  v  v    v  v  v  v    m     m    m     m      m    m    m      m
-	CMatrix_td TComplex, x, e, u, xt, ut, p, q, qt, Tcopy, qut, uqt, qut_uqt, Pk, uut, Pcopy, Ad, Pd;
+	//         m         m      m    m     m       m   m    m      v  v  v  v  v  m   m 
+	CMatrix_td TComplex, Tcopy, qut, uqt, qut_uqt, Pk, uut, Pcopy, x, e, u, p, q, Ad, Pd;
 	double f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12;
 	double normx, wre, wim, Kre, Kim;
 
@@ -54,9 +54,9 @@ void complex_triag(const CMatrix_t* A, Matrix_t* T, CMatrix_t* P)
 
 #ifdef PREALLOCATION
 #ifdef DOUBLE
-	double buffer[2 *(MATRIX_MAX_SIZE*8 + VECTOR_MAX_SIZE*8)];
+	static double buffer[2 *(MATRIX_MAX_SIZE*8 + VECTOR_MAX_SIZE*5)];
 #else // DOUBLE
-	double buffer[2 * (MATRIX_MAX_SIZE * 10 + VECTOR_MAX_SIZE * 8)];
+	static double buffer[2 * (MATRIX_MAX_SIZE * 10 + VECTOR_MAX_SIZE * 5)];
 #endif // DOUBLE
 	TComplex.pDataReal = buffer;
 	TComplex.pDataImag = buffer + MATRIX_MAX_SIZE;
@@ -80,21 +80,15 @@ void complex_triag(const CMatrix_t* A, Matrix_t* T, CMatrix_t* P)
 	e.pDataImag = buffer + 16 * MATRIX_MAX_SIZE + 3 * VECTOR_MAX_SIZE;
 	u.pDataReal = buffer + 16 * MATRIX_MAX_SIZE + 4 * VECTOR_MAX_SIZE;
 	u.pDataImag = buffer + 16 * MATRIX_MAX_SIZE + 5 * VECTOR_MAX_SIZE;
-	xt.pDataReal = buffer + 16 * MATRIX_MAX_SIZE + 6 * VECTOR_MAX_SIZE;
-	xt.pDataImag = buffer + 16 * MATRIX_MAX_SIZE + 7 * VECTOR_MAX_SIZE;
-	ut.pDataReal = buffer + 16 * MATRIX_MAX_SIZE + 8 * VECTOR_MAX_SIZE;
-	ut.pDataImag = buffer + 16 * MATRIX_MAX_SIZE + 9 * VECTOR_MAX_SIZE;
-	p.pDataReal = buffer + 16 * MATRIX_MAX_SIZE + 10 * VECTOR_MAX_SIZE;
-	p.pDataImag = buffer + 16 * MATRIX_MAX_SIZE + 11 * VECTOR_MAX_SIZE;
-	q.pDataReal = buffer + 16 * MATRIX_MAX_SIZE + 12 * VECTOR_MAX_SIZE;
-	q.pDataImag = buffer + 16 * MATRIX_MAX_SIZE + 13 * VECTOR_MAX_SIZE;
-	qt.pDataReal = buffer + 16 * MATRIX_MAX_SIZE + 14 * VECTOR_MAX_SIZE;
-	qt.pDataImag = buffer + 16 * MATRIX_MAX_SIZE + 15 * VECTOR_MAX_SIZE;
+	p.pDataReal = buffer + 16 * MATRIX_MAX_SIZE + 6 * VECTOR_MAX_SIZE;
+	p.pDataImag = buffer + 16 * MATRIX_MAX_SIZE + 7 * VECTOR_MAX_SIZE;
+	q.pDataReal = buffer + 16 * MATRIX_MAX_SIZE + 8 * VECTOR_MAX_SIZE;
+	q.pDataImag = buffer + 16 * MATRIX_MAX_SIZE + 9 * VECTOR_MAX_SIZE;
 #ifndef DOUBLE
-	Ad.pDataReal = buffer + 16 * MATRIX_MAX_SIZE + 16 * VECTOR_MAX_SIZE;
-	Ad.pDataImag = buffer + 17 * MATRIX_MAX_SIZE + 16 * VECTOR_MAX_SIZE;
-	Pd.pDataReal = buffer + 18 * MATRIX_MAX_SIZE + 16 * VECTOR_MAX_SIZE;
-	Pd.pDataImag = buffer + 19 * MATRIX_MAX_SIZE + 16 * VECTOR_MAX_SIZE;
+	Ad.pDataReal = buffer + 16 * MATRIX_MAX_SIZE + 10 * VECTOR_MAX_SIZE;
+	Ad.pDataImag = buffer + 17 * MATRIX_MAX_SIZE + 10 * VECTOR_MAX_SIZE;
+	Pd.pDataReal = buffer + 18 * MATRIX_MAX_SIZE + 10 * VECTOR_MAX_SIZE;
+	Pd.pDataImag = buffer + 19 * MATRIX_MAX_SIZE + 10 * VECTOR_MAX_SIZE;
 #else // DOUBLE
 	Pd.pDataReal = P->pDataReal;
 	Pd.pDataImag = P->pDataImag;
@@ -149,10 +143,8 @@ void complex_triag(const CMatrix_t* A, Matrix_t* T, CMatrix_t* P)
 		//			w = 1/(u'*u)*(1 + x'*u/(u'*x));
 		cnorm2_d(u.pDataReal, u.pDataImag, &f3, 1, m);
 		f4 = 1.0f/f3;
-		complex_transp_d(&u, &ut, create);
-		complex_transp_d(&x, &xt, create);
-		complex_scal_prod_d(&xt, &u, &f5, &f6);
-		complex_scal_prod_d(&x, &ut, &f7, &f8);
+		complex_scal_prod_left_transp_d(&x, &u, &f5, &f6);
+		complex_scal_prod_left_transp_d(&u, &x, &f7, &f8);
 		complex_div_d(f5, f6, f7, f8, &f9, &f10);
 		wre = f4 * (1.0 + f9);
 		wim = f4 * f10;
@@ -160,15 +152,14 @@ void complex_triag(const CMatrix_t* A, Matrix_t* T, CMatrix_t* P)
 		//			p = w' * T * u;
 		complex_matrix_mult_d(&TComplex, &u, wre, -wim, &p);
 		//			K = w/2 * u'*p;
-		complex_scal_prod_d(&ut, &p, &f11, &f12);
+		complex_scal_prod_left_transp_d(&u, &p, &f11, &f12);
 		complex_mult_d(wre/2.0f, wim/2.0f, f11, f12, &Kre, &Kim);
 		//			q = p - K*u;
 		complex_matrix_sum_d(&p, &u, -Kre, -Kim, &q);
 
 		//			T = T - q*u' - u*q';
-		complex_transp_d(&q, &qt, create);
-		complex_matrix_mult_d(&q, &ut, 1.0f, 0.0f, &qut);
-		complex_matrix_mult_d(&u, &qt, 1.0f, 0.0f, &uqt);
+		complex_matrix_mult_right_transp_d(&q, &u, &qut);
+		complex_matrix_mult_right_transp_d(&u, &q, &uqt);
 		complex_matrix_sum_d(&qut, &uqt, 1.0f, 0.0f, &qut_uqt);
 		complex_clone_d(&TComplex, &Tcopy, create);
 		complex_matrix_sum_d(&TComplex, &qut_uqt, -1.0f, 0.0f, &TComplex);
@@ -177,7 +168,7 @@ void complex_triag(const CMatrix_t* A, Matrix_t* T, CMatrix_t* P)
 		//			Pk = eye(m,m,'like',A);
 		complex_eye_d(m, &Pk, create);
 		//			Pk = Pk - w*u*u';
-		complex_matrix_mult_d(&u, &ut, 1.0f, 0.0f, &uut);
+		complex_matrix_mult_right_transp_d(&u, &u, &uut);
 		complex_matrix_sum_d(&Pk, &uut, -wre, -wim, &Pk);
 
 		//			P = Pk * P;
@@ -198,11 +189,8 @@ void complex_triag(const CMatrix_t* A, Matrix_t* T, CMatrix_t* P)
 	complex_free_d(&x);
 	complex_free_d(&e);
 	complex_free_d(&u);
-	complex_free_d(&xt);
-	complex_free_d(&ut);
 	complex_free_d(&p);
 	complex_free_d(&q);
-	complex_free_d(&qt);
 	complex_free_d(&Tcopy);
 	complex_free_d(&qut);
 	complex_free_d(&uqt);
@@ -285,7 +273,7 @@ void qr_step_symm_real(const Matrix_t* T, Matrix_t* Q, Matrix_t* R)
 //	end
 //end
 {
-	Matrix_t Tcopy, G, Gt, TG, Qcopy;
+	Matrix_t Tcopy, G, TG, Qcopy;
 	REAL_TYPE d, mu, x, z, c, s;
 	REAL_TYPE f1;
 	int k, create = 1;
@@ -294,12 +282,11 @@ void qr_step_symm_real(const Matrix_t* T, Matrix_t* Q, Matrix_t* R)
 	int n = T->numCols;
 
 #ifdef PREALLOCATION
-	static REAL_TYPE buffer[MATRIX_MAX_SIZE * 5];
+	static REAL_TYPE buffer[MATRIX_MAX_SIZE * 4];
 	Tcopy.pData = buffer;
 	G.pData = buffer + MATRIX_MAX_SIZE;
-	Gt.pData = buffer + 2 * MATRIX_MAX_SIZE;
-	TG.pData = buffer + 3 * MATRIX_MAX_SIZE;
-	Qcopy.pData = buffer + 4 * MATRIX_MAX_SIZE;
+	TG.pData = buffer + 2 * MATRIX_MAX_SIZE;
+	Qcopy.pData = buffer + 3 * MATRIX_MAX_SIZE;
 #endif // PREALLOCATION
 
 	//	if n == 1
@@ -344,9 +331,8 @@ void qr_step_symm_real(const Matrix_t* T, Matrix_t* Q, Matrix_t* R)
 		G.pData[(k+1)*n + k+1] = c;
 
 		//		T = G'*T*G;
-		real_transp(&G, &Gt, create);
 		real_matrix_mult(&Tcopy, &G, 1.0f, &TG);
-		real_matrix_mult(&Gt, &TG, 1.0f, &Tcopy);
+		real_matrix_mult_left_transp(&G, &TG, 1.0f, &Tcopy);
 
 		//		Q = Q*G;
 		real_clone(Q, &Qcopy, create);
@@ -369,7 +355,6 @@ void qr_step_symm_real(const Matrix_t* T, Matrix_t* Q, Matrix_t* R)
 
 	real_free(&Tcopy);
 	real_free(&G);
-	real_free(&Gt);
 	real_free(&TG);
 	real_free(&Qcopy);
 }
@@ -515,14 +500,14 @@ void eig_symm_triag(const CMatrix_t* A, REAL_TYPE tol, Matrix_t* S, CMatrix_t* U
 {
 	int n = A->numRows, i;
 	Matrix_t T, Q, Ss; // Q не удалять! у неё общий буфер с Qcmpl!
-	CMatrix_t P, Qcmpl, Pt;
+	CMatrix_t P, Qcmpl;
 	int indices[VECTOR_MAX_SIZE];
 #ifdef TEST_RESULT
 	CMatrix_t US, USUt, test, Scmpl;
 #endif // TEST_RESULT
 
 #ifdef PREALLOCATION
-	static REAL_TYPE buffer[MATRIX_MAX_SIZE * (3 + 3*2 - 1)]; // матрицы Q и Qcmpl имеют общий буфер
+	static REAL_TYPE buffer[MATRIX_MAX_SIZE * (3 + 2*2 - 1)]; // матрицы Q и Qcmpl имеют общий буфер
 	T.pData = buffer;
 	Q.pData = buffer + MATRIX_MAX_SIZE;
 	Ss.pData = buffer + 2 * MATRIX_MAX_SIZE;
@@ -530,8 +515,6 @@ void eig_symm_triag(const CMatrix_t* A, REAL_TYPE tol, Matrix_t* S, CMatrix_t* U
 	P.pDataImag = buffer + 4 * MATRIX_MAX_SIZE;
 	Qcmpl.pDataReal = Q.pData;
 	Qcmpl.pDataImag = buffer + 5 * MATRIX_MAX_SIZE;
-	Pt.pDataReal = buffer + 6 * MATRIX_MAX_SIZE;
-	Pt.pDataImag = buffer + 7 * MATRIX_MAX_SIZE;
 
 #ifdef TEST_RESULT
 	static REAL_TYPE bufferTest[MATRIX_MAX_SIZE * 2 * 4];
@@ -567,9 +550,8 @@ void eig_symm_triag(const CMatrix_t* A, REAL_TYPE tol, Matrix_t* S, CMatrix_t* U
 	Q.pData = NULL; // на всякий случай, если кто-то попытается освободить Q
 #endif
 	memset(Qcmpl.pDataImag, 0, n * n * sizeof(REAL_TYPE));
-	complex_transp(&P, &Pt, 1);
 
-	complex_matrix_mult(&Pt, &Qcmpl, 1.0f, 0.0f, U);
+	complex_matrix_mult_left_transp(&P, &Qcmpl, 1.0f, 0.0f, U);
 
 	special_sort_descending(S->pData, S->numCols, indices);
 	complex_swap_columns(U, indices);
@@ -595,7 +577,6 @@ void eig_symm_triag(const CMatrix_t* A, REAL_TYPE tol, Matrix_t* S, CMatrix_t* U
 
 	real_free(&T);
 	complex_free(&Qcmpl);
-	complex_free(&Pt);
 	real_free(&Ss);
 	complex_free(&P);
 }

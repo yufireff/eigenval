@@ -16,6 +16,8 @@ SECTIONS {
     main.*(.text);
     matrix.*(.text);
     matrix.*(.text);
+    MatrixSpecial.*(.text);
+    MatrixSpecial.*(.text);
     nvcom_01.*(.text);
     real.*(.text);
     real.*(.text);
@@ -35,6 +37,8 @@ SECTIONS {
     main.*(.data);
     matrix.*(.data);
     matrix.*(.data);
+    MatrixSpecial.*(.data);
+    MatrixSpecial.*(.data);
     nvcom_01.*(.data);
     real.*(.data);
     real.*(.data);

@@ -50,18 +50,18 @@ SECTIONS {
  
  
  . =0xb8440000; 
- .DSP_text : 
+ .dsp_text : 
   {
-    *(.DSP_text)
+    *(.dsp_text)
   }
  
  . =0xb8400000; 
- .DSP_data : 
+ .dsp_data : 
   {
-    *(.DSP_data)
+    *(.dsp_data)
   }
- .DSP_bss : 
+ .dsp_bss : 
   {
-     *(.DSP_bss )
+     *(.dsp_bss )
   }
 }

@@ -24,5 +24,5 @@
 //#define DSP_OPTIMIZATION
 #endif // WIN32
 
-#define TEST_RESULT
+//#define TEST_RESULT
 #endif // SETTINGS_H

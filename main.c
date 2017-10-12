@@ -91,7 +91,7 @@ int main(void)
 	complex_matrix_mult_dsp(&Ac, &Bc, 1.0f, 0.0f, &Cc, 0);
 
 	*/
-    
+
 #define N 20
 
 	REAL_TYPE realA[N*N] =
@@ -172,7 +172,7 @@ int main(void)
 	U.pDataReal = realU[0];
 	U.pDataImag = imagU[0];
 
-	inv(&A, &AInv);
+//	inv(&A, &AInv);
 
 	real_new(1, N, &S);
 	complex_new(N, N, &U);

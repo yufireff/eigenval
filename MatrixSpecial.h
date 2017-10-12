@@ -5,5 +5,12 @@ int complex_matrix_mult_right_transp(const CMatrix_t* a, const CMatrix_t* b, REA
 
 int real_matrix_mult_left_transp(const Matrix_t* a, const Matrix_t* b, REAL_TYPE factor, Matrix_t* res);
 
+int complex_matrix_mult_left_transp_d(const CMatrix_td* a, const CMatrix_td* b,  CMatrix_td* res);
+
+int complex_matrix_mult_right_transp_d(const CMatrix_td* a, const CMatrix_td* b, CMatrix_td* res);
+
+int complex_scal_prod_left_transp_d(const CMatrix_td* a, const CMatrix_td* b, double* re, double* im);
+
+int complex_matrix_mult_left_transp(const CMatrix_t* a, const CMatrix_t* b, REAL_TYPE factor_re, REAL_TYPE factor_im, CMatrix_t* res);
 
 #endif //
