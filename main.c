@@ -50,10 +50,11 @@ int main(void)
 		4.1, 0.3, 6.0, 2.8
 	};
 
-/*	float aImData[2*3] =
+	float aImData[3*2] =
 	{
-		2.6, 1.3, 0.8,
-		5.8, 9.2, 7.3
+		2.6, 1.3,
+		0.8, 5.8,
+		9.2, 7.3
 	};
 
 	float bImData[3*4] =
@@ -61,12 +62,12 @@ int main(void)
 		0.3, 2.7, 0.5, 4.2,
 		2.2, 4.5, 8.1, 0.4,
 		1.6, 4.2, 6.6, 2.8
-	};*/
+	};
 
-	float cData[2*4]; //, cImData[2*4];
+	float cData[2*4], cImData[2*4];
 
 	Matrix_t A, B, C;
-	/*CMatrix_t Ac, Bc, Cc;
+	CMatrix_t Ac, Bc, Cc;
 	Ac.numRows = 3;
 	Ac.numCols = 2;
 	Ac.pDataReal = aData;
@@ -78,7 +79,7 @@ int main(void)
 	Cc.numRows = 2;
 	Cc.numCols = 4;
 	Cc.pDataReal = cData;
-	Cc.pDataImag = cImData;*/
+	Cc.pDataImag = cImData;
 
 	A.numRows = 3;
 	A.numCols = 2;
@@ -89,8 +90,12 @@ int main(void)
 	C.numRows = 2;
 	C.numCols = 4;
 	C.pData = cData;
-
-	real_matrix_mult_left_transp_dsp(&A, &B, 1.2f, &C, 0);
+#ifdef DSP_OPTIMIZATION
+	//real_matrix_mult_left_transp_dsp(&A, &B, 1.2f, &C, 0);
+	complex_matrix_mult_left_transp_dsp(&Ac, &Bc, &Cc, 0);
+#else // DSP_OPTIMIZATION
+	real_matrix_mult_left_transp(&A, &B, 1.2f, &C);
+#endif // DSP_OPTIMIZATION
 	//real_matrix_mult_dsp(&A, &B, 1.2f, &C, 0);
 	//complex_matrix_mult_dsp(&Ac, &Bc, 1.0f, 0.0f, &Cc, 0);
 

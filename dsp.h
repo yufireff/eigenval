@@ -5,6 +5,7 @@ extern int RealMatrixMult;
 extern int ComplexMatrixMult;
 extern int ComplexMatrixInv;
 extern int RealMatrixMultLeftTransp;
+extern int ComplexMatrixMultLeftTransp;
 
 extern float g_pReal1[49*49];
 extern float g_pImag1[49*49];

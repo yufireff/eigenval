@@ -19,6 +19,8 @@ int inv_dsp(const CMatrix_t* a, CMatrix_t* ainv, int numDsp);
 
 int real_matrix_mult_left_transp_dsp(const Matrix_t* a, const Matrix_t* b, REAL_TYPE factor_re, Matrix_t* res, int numDsp);
 
+int complex_matrix_mult_left_transp_dsp(const CMatrix_t* a, const CMatrix_t* b, CMatrix_t* res, int numDsp);
+
 #endif // DSP_OPTIMIZATION
 
 #endif // _MATRIX_DSP_H_
