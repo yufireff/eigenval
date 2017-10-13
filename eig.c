@@ -8,6 +8,7 @@
 #include "settings.h"
 #include "algorithms.h"
 #include "MatrixSpecial.h"
+#include "MatrixDsp.h"
 
 void complex_triag(const CMatrix_t* A, Matrix_t* T, CMatrix_t* P)
 // Трехдиагонализация Хаусхолдера
@@ -44,7 +45,7 @@ void complex_triag(const CMatrix_t* A, Matrix_t* T, CMatrix_t* P)
 // end
 {
 	int i, create = 1;
-	//         m         m      m    m     m       m   m    m      v  v  v  v  v  m   m 
+	//         m         m      m    m     m       m   m    m      v  v  v  v  v  m   m
 	CMatrix_td TComplex, Tcopy, qut, uqt, qut_uqt, Pk, uut, Pcopy, x, e, u, p, q, Ad, Pd;
 	double f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12;
 	double normx, wre, wim, Kre, Kim;
@@ -331,12 +332,12 @@ void qr_step_symm_real(const Matrix_t* T, Matrix_t* Q, Matrix_t* R)
 		G.pData[(k+1)*n + k+1] = c;
 
 		//		T = G'*T*G;
-		real_matrix_mult(&Tcopy, &G, 1.0f, &TG);
-		real_matrix_mult_left_transp(&G, &TG, 1.0f, &Tcopy);
+		real_matrix_mult_dsp(&Tcopy, &G, 1.0f, &TG, 0);
+		real_matrix_mult_left_transp_dsp(&G, &TG, 1.0f, &Tcopy, 0);
 
 		//		Q = Q*G;
 		real_clone(Q, &Qcopy, create);
-		real_matrix_mult(&Qcopy, &G, 1.0f, Q);
+		real_matrix_mult_dsp(&Qcopy, &G, 1.0f, Q, 0);
 
 		//		if k < n-1
 		//			x = T(k+1,k);
@@ -467,7 +468,7 @@ void qr_symm_real(const Matrix_t* T, REAL_TYPE tol, Matrix_t* U, Matrix_t* D)
 			real_partial_copy(&Qm, 0, 0, size, size, &Q, p-1, p-1);
 			//			U = U*Q;
 			real_clone(U, &Ucopy, create);
-			real_matrix_mult(&Ucopy, &Q, 1.0f, U);
+			real_matrix_mult_dsp(&Ucopy, &Q, 1.0f, U, 0);
 
 			real_free(&Tpart);
 			real_free(&Qm);
@@ -551,7 +552,7 @@ void eig_symm_triag(const CMatrix_t* A, REAL_TYPE tol, Matrix_t* S, CMatrix_t* U
 #endif
 	memset(Qcmpl.pDataImag, 0, n * n * sizeof(REAL_TYPE));
 
-	complex_matrix_mult_left_transp(&P, &Qcmpl, 1.0f, 0.0f, U);
+	complex_matrix_mult_left_transp_dsp(&P, &Qcmpl, U, 0);
 
 	special_sort_descending(S->pData, S->numCols, indices);
 	complex_swap_columns(U, indices);
@@ -565,8 +566,8 @@ void eig_symm_triag(const CMatrix_t* A, REAL_TYPE tol, Matrix_t* S, CMatrix_t* U
 	for (i = 0; i < S->numCols; ++i)
 		Scmpl.pDataReal[i*S->numCols + i] = S->pData[i];
 
-	complex_matrix_mult(U, &Scmpl, 1.0f, 0.0f, &US);
-	complex_matrix_mult_right_transp(&US, U, 1.0, 0.0, &USUt);
+	complex_matrix_mult_dsp(U, &Scmpl, 1.0f, 0.0f, &US, 0);
+	complex_matrix_mult_right_transp_dsp(&US, U, &USUt, 0);
 	complex_matrix_sum(&USUt, A, -1.0f, 0.0f, &test);
 
 	complex_free(&US);

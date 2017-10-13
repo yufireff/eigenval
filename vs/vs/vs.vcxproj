@@ -158,6 +158,7 @@
     <ClInclude Include="..\..\complex.h" />
     <ClInclude Include="..\..\eig.h" />
     <ClInclude Include="..\..\matrix.h" />
+    <ClInclude Include="..\..\MatrixDsp.h" />
     <ClInclude Include="..\..\MatrixSpecial.h" />
     <ClInclude Include="..\..\real.h" />
     <ClInclude Include="..\..\settings.h" />
@@ -168,6 +169,7 @@
     <ClCompile Include="..\..\eig.c" />
     <ClCompile Include="..\..\main.c" />
     <ClCompile Include="..\..\matrix.c" />
+    <ClCompile Include="..\..\MatrixDsp.c" />
     <ClCompile Include="..\..\MatrixSpecial.c" />
     <ClCompile Include="..\..\real.c" />
   </ItemGroup>

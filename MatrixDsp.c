@@ -121,5 +121,39 @@ int complex_matrix_mult_right_transp_dsp(const CMatrix_t* a, const CMatrix_t* b,
 	return MATRIX_SUCCESS;
 }
 
+#else // DSP_OPTIMIZATION
+
+#include "matrix.h"
+#include "MatrixSpecial.h"
+
+int complex_matrix_mult_dsp(const CMatrix_t* a, const CMatrix_t* b, REAL_TYPE factor_re, REAL_TYPE factor_im, CMatrix_t* res, int numDsp)
+{
+	return complex_matrix_mult(a, b, factor_re, factor_im, res);
+}
+
+int real_matrix_mult_dsp(const Matrix_t* a, const Matrix_t* b, REAL_TYPE factor, Matrix_t* res, int numDsp)
+{
+	return real_matrix_mult(a, b, factor, res);
+}
+
+int inv_dsp(const CMatrix_t* a, CMatrix_t* ainv, int numDsp)
+{
+	return inv(a, ainv);
+}
+
+int real_matrix_mult_left_transp_dsp(const Matrix_t* a, const Matrix_t* b, REAL_TYPE factor, Matrix_t* res, int numDsp)
+{
+	return real_matrix_mult_left_transp(a, b, factor, res);
+}
+
+int complex_matrix_mult_left_transp_dsp(const CMatrix_t* a, const CMatrix_t* b, CMatrix_t* res, int numDsp)
+{
+	return complex_matrix_mult_left_transp(a, b, 1.0f, 0.0f, res);
+}
+
+int complex_matrix_mult_right_transp_dsp(const CMatrix_t* a, const CMatrix_t* b, CMatrix_t* res, int numDsp)
+{
+	return complex_matrix_mult_right_transp(a, b, 1.0f, 0.0f, res);
+}
 
 #endif // DSP_OPTIMIZATION

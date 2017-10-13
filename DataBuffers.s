@@ -12,19 +12,19 @@
  .global g_nColumns2
 
  .data
- ;g_pReal1: .space 49*49*4, 0
- ;g_pImag1: .space 49*49*4, 0
- ;g_pReal2: .space 2*49*49*4, 0
- ;g_pImag2: .space 2*49*49*4, 0
- ;g_pReal3: .space 49*49*4, 0
- ;g_pImag3: .space 49*49*4, 0
+ g_pReal1: .space 49*49*4, 0
+ g_pImag1: .space 49*49*4, 0
+ g_pReal2: .space 2*49*49*4, 0
+ g_pImag2: .space 2*49*49*4, 0
+ g_pReal3: .space 49*49*4, 0
+ g_pImag3: .space 49*49*4, 0
  ; для отладки
- g_pReal1: .space 4*4*4, 0
- g_pImag1: .space 4*4*4, 0
- g_pReal2: .space 4*4*4, 0
- g_pImag2: .space 4*4*4, 0
- g_pReal3: .space 4*4*4, 0
- g_pImag3: .space 4*4*4, 0
+ ;g_pReal1: .space 4*4*4, 0
+ ;g_pImag1: .space 4*4*4, 0
+ ;g_pReal2: .space 4*4*4, 0
+ ;g_pImag2: .space 4*4*4, 0
+ ;g_pReal3: .space 4*4*4, 0
+ ;g_pImag3: .space 4*4*4, 0
 
  g_Factor: .real 0
  g_nRows1: .word 0

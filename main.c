@@ -36,7 +36,7 @@ int main(void)
 #else
 	inv(&Ac, &Bc);
 #endif*/
-	float aData[2*3] =
+	/*float aData[2*3] =
 	{
 		1.5, 4.6, 7.4,
 		8.1, 0.4, 3.5
@@ -91,16 +91,13 @@ int main(void)
 	C.numRows = 2;
 	C.numCols = 4;
 	C.pData = cData;
-#ifdef DSP_OPTIMIZATION
+
 	//real_matrix_mult_left_transp_dsp(&A, &B, 1.2f, &C, 0);
 	complex_matrix_mult_right_transp_dsp(&Ac, &Bc, &Cc, 0);
-#else // DSP_OPTIMIZATION
-	real_matrix_mult_right_transp(&A, &B, 1.2f, &C);
-#endif // DSP_OPTIMIZATION
 	//real_matrix_mult_dsp(&A, &B, 1.2f, &C, 0);
 	//complex_matrix_mult_dsp(&Ac, &Bc, 1.0f, 0.0f, &Cc, 0);
+     */
 
-	/*
 
 #define N 20
 
@@ -189,6 +186,6 @@ int main(void)
 
 	eig_symm_triag(&A, 0.01f, &S, &U);
 	//lambda = eig_symm_triag_only_one(&A, 0.01f, &U);
-*/
+
     return 0;
 }
