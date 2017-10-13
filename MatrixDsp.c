@@ -100,5 +100,26 @@ int complex_matrix_mult_left_transp_dsp(const CMatrix_t* a, const CMatrix_t* b, 
 	return MATRIX_SUCCESS;
 }
 
+int complex_matrix_mult_right_transp_dsp(const CMatrix_t* a, const CMatrix_t* b, CMatrix_t* res, int numDsp)
+{
+	init_dsp(numDsp);
+
+	memcpy(&(g_pReal1[0]), a->pDataReal, a->numRows * a->numCols * sizeof(float));
+	memcpy(&(g_pReal2[0]), b->pDataReal, b->numRows * b->numCols * sizeof(float));
+	memcpy(&(g_pImag1[0]), a->pDataImag, a->numRows * a->numCols * sizeof(float));
+	memcpy(&(g_pImag2[0]), b->pDataImag, b->numRows * b->numCols * sizeof(float));
+
+
+	g_nRows1 = a->numRows;
+	g_nColumns1 = a->numCols;
+	g_nRows2 = b->numRows;
+
+	run_dsp(numDsp, DSP_ROUTINE_ADDR(ComplexMatrixMultRightTransp));
+	memcpy(res->pDataReal, &(g_pReal3[0]), res->numRows * res->numCols * sizeof(float));
+	memcpy(res->pDataImag, &(g_pImag3[0]), res->numRows * res->numCols * sizeof(float));
+
+	return MATRIX_SUCCESS;
+}
+
 
 #endif // DSP_OPTIMIZATION

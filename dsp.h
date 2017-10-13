@@ -6,6 +6,7 @@ extern int ComplexMatrixMult;
 extern int ComplexMatrixInv;
 extern int RealMatrixMultLeftTransp;
 extern int ComplexMatrixMultLeftTransp;
+extern int ComplexMatrixMultRightTransp;
 
 extern float g_pReal1[49*49];
 extern float g_pImag1[49*49];
@@ -16,8 +17,9 @@ extern float g_pImag3[49*49];
 
 extern float g_Factor;
 extern float g_FactorIm;
-extern int g_nRows1 ;
+extern int g_nRows1;
 extern int g_nColumns1;
+extern int g_nRows2;
 extern int g_nColumns2;
 
 void init_dsp(int dspNum);

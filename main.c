@@ -36,44 +36,45 @@ int main(void)
 #else
 	inv(&Ac, &Bc);
 #endif*/
-	float aData[3*2] =
+	float aData[2*3] =
 	{
-		1.5, 4.6,
-		7.4, 8.1,
-		0.4, 3.5
+		1.5, 4.6, 7.4,
+		8.1, 0.4, 3.5
 	};
 
-	float bData[3*4] =
+	float aImData[2*3] =
 	{
-		4.3, 9.5, 2.8, 1.6,
-		3.3, 2.2, 1.7, 5.6,
-		4.1, 0.3, 6.0, 2.8
+		2.6, 1.3, 0.8,
+		5.8, 9.2, 7.3
 	};
 
-	float aImData[3*2] =
+	float bData[4*3] =
 	{
-		2.6, 1.3,
-		0.8, 5.8,
-		9.2, 7.3
+		4.3, 9.5, 2.8,
+		1.6, 3.3, 2.2,
+		1.7, 5.6, 4.1,
+		0.3, 6.0, 2.8
 	};
 
-	float bImData[3*4] =
+
+	float bImData[4*3] =
 	{
-		0.3, 2.7, 0.5, 4.2,
-		2.2, 4.5, 8.1, 0.4,
-		1.6, 4.2, 6.6, 2.8
+		0.3, 2.7, 0.5,
+		4.2, 2.2, 4.5,
+		8.1, 0.4, 1.6,
+		4.2, 6.6, 2.8
 	};
 
 	float cData[2*4], cImData[2*4];
 
 	Matrix_t A, B, C;
 	CMatrix_t Ac, Bc, Cc;
-	Ac.numRows = 3;
-	Ac.numCols = 2;
+	Ac.numRows = 2;
+	Ac.numCols = 3;
 	Ac.pDataReal = aData;
 	Ac.pDataImag = aImData;
-	Bc.numRows = 3;
-	Bc.numCols = 4;
+	Bc.numRows = 4;
+	Bc.numCols = 3;
 	Bc.pDataReal = bData;
 	Bc.pDataImag = bImData;
 	Cc.numRows = 2;
@@ -81,20 +82,20 @@ int main(void)
 	Cc.pDataReal = cData;
 	Cc.pDataImag = cImData;
 
-	A.numRows = 3;
-	A.numCols = 2;
+	A.numRows = 2;
+	A.numCols = 3;
 	A.pData = aData;
-	B.numRows = 3;
-	B.numCols = 4;
+	B.numRows = 4;
+	B.numCols = 3;
 	B.pData = bData;
 	C.numRows = 2;
 	C.numCols = 4;
 	C.pData = cData;
 #ifdef DSP_OPTIMIZATION
 	//real_matrix_mult_left_transp_dsp(&A, &B, 1.2f, &C, 0);
-	complex_matrix_mult_left_transp_dsp(&Ac, &Bc, &Cc, 0);
+	complex_matrix_mult_right_transp_dsp(&Ac, &Bc, &Cc, 0);
 #else // DSP_OPTIMIZATION
-	real_matrix_mult_left_transp(&A, &B, 1.2f, &C);
+	real_matrix_mult_right_transp(&A, &B, 1.2f, &C);
 #endif // DSP_OPTIMIZATION
 	//real_matrix_mult_dsp(&A, &B, 1.2f, &C, 0);
 	//complex_matrix_mult_dsp(&Ac, &Bc, 1.0f, 0.0f, &Cc, 0);

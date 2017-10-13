@@ -1,5 +1,6 @@
  .global RealMatrixMultLeftTransp
  .global ComplexMatrixMultLeftTransp
+ .global ComplexMatrixMultRightTransp
  .global g_pReal1
  .global g_pImag1
  .global g_pReal2
@@ -78,7 +79,7 @@ ComplexMatrixMultLeftTransp:
 	move g_pImag2, a3.s
 	move g_pReal3, a4.s
 	move g_pImag3, a5.s
-	; начальные значеия адресов
+	; начальные значения адресов
 	move a0.s, r0.s
 	move a1.s, r1.s
 	move a2.s, r2.s
@@ -145,4 +146,74 @@ ComplexMatrixMultLeftTransp:
 		inc r9.s, r9.s ; условие выхода из цикла по строкам
 		cmp r9.s, r8.s
 		j.ne СMMLTStartRowsLoop
+	stop
+
+
+; умножение комплексных матриц A * B'
+ComplexMatrixMultRightTransp:
+	move g_pReal1, a0.s
+	move g_pImag1, a1.s
+	move g_pReal2, a2.s
+	move g_pImag2, a3.s
+	move g_pReal3, a4.s
+	move g_pImag3, a5.s
+	; начальные значения адресов
+	move a0.s, r0.s
+	move a1.s, r1.s
+	move a2.s, r2.s
+	move a3.s, r3.s
+	move a4.s, r4.s
+	move a5.s, r5.s
+
+	move g_nRows1, a6.s
+	move (a6), r6.l; r6.s = nRows1 == nRows3
+	move g_nColumns1, a6.s
+	move (a6), r8.l; r8.s = nColumns1 == nColumns2
+	move g_nRows2, a6.s
+	move (a6), r10.l; r10.s = nRows2 == nColumns3
+; занятые регистры ri.l
+; x 1 x 3 x 5 x 7 x 9 x 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31
+
+	move #0, r7.s ; i, счётчик строк в результирующей матрице
+	СMMRTStartRowsLoop: ; в обеих матрицах идём вдоль строк
+		move #0, r11.s ; j, счётчик столбцов в результирующей матрице
+		СMMRTStartColumnsLoop:
+			; начальное положение адреса a0, а1 = base + i*nColumns1
+			mpuu r8.s, r7.s, r14.l
+			add r0.s, r14.s, r12.s
+			move r12.s, a0.s
+			add r1.s, r14.s, r12.s
+			move r12.s, a1.s
+			; начальное положение адреса a2, а3 = base + j*nColumns2
+			mpuu r8.s, r11.s, r14.l
+			add r2.s, r14.s, r12.s
+			move r12.s, a2.s
+			add r3.s, r14.s, r12.s
+			move r12.s, a3.s
+			move #0, r20.l ; частичная сумма, re
+			move #0, r22.l ; частичная сумма, im
+; x 1 x 3 x 5 x 7 x 9 x 11 12 13 14 15 16 17 x 19 20 21 22 23 24 25 26 27 28 29 30 31
+			do r8.s, CMMRTEndInnerLoop
+				move (a0)+, r12.l ; re 1
+				move (a1)+, r14.l ; im 1
+				move (a2)+, r16.l ; re 2
+				move (a3)+, r18.l ; im 2
+				fmpy r12.l, r16.l, r1.l ; re1 * re2
+				fmpy r14.l, r18.l, r3.l ; im1 * im2
+				fmpy r12.l, r18.l, r5.l ; re1 * im2
+				fmpy r16.l, r14.l, r7.l ; re2 * im1
+				fadd r3.l, r1.l, r9.l ; re1*re2 + im1*im2 (знак im2 изменён из-за транспонирования)
+				fsub r5.l, r7.l, r11.l ; re2*im1 - re1*im2  (знак im2 изменён из-за транспонирования)
+				fadd r9.l, r20.l ; re += ...
+			CMMRTEndInnerLoop:
+				fadd r11.l, r22.l; im += ...
+			; запоминаем значения
+			move r20.l, (a4)+
+			move r22.l, (a5)+
+			inc r11.s, r11.s ; условие выхода из цикла по столбцам
+			cmp r11.s, r10.s
+			j.ne СMMRTStartColumnsLoop
+		inc r7.s, r7.s ; условие выхода из цикла по строкам
+		cmp r7.s, r6.s
+		j.ne СMMRTStartRowsLoop
 	stop
