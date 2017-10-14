@@ -128,7 +128,24 @@ int complex_matrix_mult_right_transp_dsp(const CMatrix_t* a, const CMatrix_t* b,
 
 int complex_matrix_mult_dsp(const CMatrix_t* a, const CMatrix_t* b, REAL_TYPE factor_re, REAL_TYPE factor_im, CMatrix_t* res, int numDsp)
 {
-	return complex_matrix_mult(a, b, factor_re, factor_im, res);
+	CMatrix_t copy;
+#ifdef PREALLOCATION
+	static REAL_TYPE buffer[2 * MATRIX_MAX_SIZE];
+	copy.pDataReal = buffer;
+	copy.pDataImag = buffer + MATRIX_MAX_SIZE;
+#endif // PREALLOCATION
+	if (a == res)
+	{
+		complex_clone(a, &copy, 1);
+		return complex_matrix_mult(&copy, b, factor_re, factor_im, res);
+	}
+	else if (b == res)
+	{
+		complex_clone(b, &copy, 1);
+		return complex_matrix_mult(a, &copy, factor_re, factor_im, res);
+	}
+	else 
+		return complex_matrix_mult(a, b, factor_re, factor_im, res);
 }
 
 int real_matrix_mult_dsp(const Matrix_t* a, const Matrix_t* b, REAL_TYPE factor, Matrix_t* res, int numDsp)
