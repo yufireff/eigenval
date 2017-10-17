@@ -25,4 +25,6 @@ int complex_matrix_mult_left_transp_dsp(const CMatrix_t* a, const CMatrix_t* b, 
 
 int complex_matrix_mult_right_transp_dsp(const CMatrix_t* a, const CMatrix_t* b, CMatrix_t* res, int numDsp);
 
+int real_matrix_mult_at_b_a_dsp(const Matrix_t* a, const Matrix_t* b, Matrix_t* res, int numDsp);
+
 #endif // _MATRIX_DSP_H_

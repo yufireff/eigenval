@@ -19,10 +19,22 @@ int main(void)
 		3.5, 2.1, 1.7, 7.2,
 		1.6, 4.2, 6.6, 3.4,
 		2.8, 3.0, 9.3, 5.5
-	}
+	};
 	float bData[16], bImData[16];
 	//float one = 1.0f;
-	CMatrix_t Ac, Bc;
+	Matrix_t A, B, C;
+    CMatrix_t Ac, Bc;
+    A.numRows = 4;
+    A.numCols = 4;
+    A.pData = aData;
+    B.numRows = 4;
+    B.numCols = 4;
+    B.pData = aImData;
+    C.numRows = 4;
+    C.numCols = 4;
+    C.pData = bData;
+    real_matrix_mult_at_b_a_dsp(&A, &B, &C, 0);
+
 	Ac.numRows = 4;
 	Ac.numCols = 4;
 	Ac.pDataReal = (float*)aData;
@@ -31,11 +43,7 @@ int main(void)
 	Bc.numCols = 4;
 	Bc.pDataReal = (float*)bData;
 	Bc.pDataImag = (float*)bImData;
-#ifdef DSP_OPTIMIZATION
-	inv_dsp(&Ac, &Bc, 0);
-#else
-	inv(&Ac, &Bc);
-#endif*/
+	inv_dsp(&Ac, &Bc, 0);   */
 	/*float aData[2*3] =
 	{
 		1.5, 4.6, 7.4,
@@ -187,5 +195,5 @@ int main(void)
 	eig_symm_triag(&A, 0.01f, &S, &U);
 	//lambda = eig_symm_triag_only_one(&A, 0.01f, &U);
 
-    return 0;
+	return 0;
 }

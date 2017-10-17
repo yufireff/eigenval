@@ -3,6 +3,8 @@
 
 #include "complex.h"
 
+#ifndef DSP_OPTIMIZATION
+
 int complex_matrix_mult_right_transp(const CMatrix_t* a, const CMatrix_t* b, REAL_TYPE factor_re, REAL_TYPE factor_im, CMatrix_t* res)
 {
 	int i, j, k, i1, j1;
@@ -185,3 +187,25 @@ int complex_matrix_mult_left_transp(const CMatrix_t* a, const CMatrix_t* b, REAL
 
 	return MATRIX_SUCCESS;
 }
+
+int real_matrix_mult_at_b_a(const Matrix_t* a, const Matrix_t* b, Matrix_t* res)
+{
+	Matrix_t ba;
+#ifdef PREALLOCATION
+	static REAL_TYPE buffer[MATRIX_MAX_SIZE];
+	ba.pData = buffer;
+#endif // PREALLOCATION
+
+	if (a->numRows != a->numCols || b->numRows != b->numCols || res->numCols != res->numRows
+		|| a->numRows != b->numRows || a->numRows != res->numRows)
+		return MATRIX_EXCEEDS;
+
+	real_new(a->numRows, a->numCols, &ba);
+
+	real_matrix_mult(b, a, 1.0f, &ba);
+	real_matrix_mult_left_transp(a, &ba, 1.0f, res);
+
+	return MATRIX_SUCCESS;
+}
+
+#endif // DSP_OPTIMIZATION

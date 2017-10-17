@@ -274,7 +274,7 @@ void qr_step_symm_real(const Matrix_t* T, Matrix_t* Q, Matrix_t* R)
 //	end
 //end
 {
-	Matrix_t Tcopy, G, TG;
+	Matrix_t Tcopy, G;
 	REAL_TYPE d, mu, x, z, c, s;
 	REAL_TYPE f1;
 	int k, create = 1;
@@ -283,10 +283,9 @@ void qr_step_symm_real(const Matrix_t* T, Matrix_t* Q, Matrix_t* R)
 	int n = T->numCols;
 
 #ifdef PREALLOCATION
-	static REAL_TYPE buffer[MATRIX_MAX_SIZE * 3];
+	static REAL_TYPE buffer[MATRIX_MAX_SIZE * 2];
 	Tcopy.pData = buffer;
 	G.pData = buffer + MATRIX_MAX_SIZE;
-	TG.pData = buffer + 2 * MATRIX_MAX_SIZE;
 #endif // PREALLOCATION
 
 	//	if n == 1
@@ -300,7 +299,6 @@ void qr_step_symm_real(const Matrix_t* T, Matrix_t* Q, Matrix_t* R)
 	}
 
 	real_clone(T, &Tcopy, ALLOCATE_MATRIX);
-	real_new(n, n, &TG);
 
 	//	d = (T(n-1,n-1) - T(n,n))/2;
 	d = (Tcopy.pData[(n-2)*n + n-2] - Tcopy.pData[(n-1)*n + n-1]) / 2.0f;
@@ -331,8 +329,7 @@ void qr_step_symm_real(const Matrix_t* T, Matrix_t* Q, Matrix_t* R)
 		G.pData[(k+1)*n + k+1] = c;
 
 		//		T = G'*T*G;
-		real_matrix_mult_dsp(&Tcopy, &G, 1.0f, &TG, 0);
-		real_matrix_mult_left_transp_dsp(&G, &TG, 1.0f, &Tcopy, 0);
+		real_matrix_mult_at_b_a_dsp(&G, &Tcopy, &Tcopy, 0);
 
 		//		Q = Q*G;
 		real_matrix_mult_dsp(Q, &G, 1.0f, Q, 0);
@@ -354,7 +351,6 @@ void qr_step_symm_real(const Matrix_t* T, Matrix_t* Q, Matrix_t* R)
 
 	real_free(&Tcopy);
 	real_free(&G);
-	real_free(&TG);
 }
 
 void qr_symm_real(const Matrix_t* T, REAL_TYPE tol, Matrix_t* U, Matrix_t* D)

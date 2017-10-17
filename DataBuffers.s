@@ -10,6 +10,7 @@
  .global g_nColumns1
  .global g_nRows2
  .global g_nColumns2
+ .global g_Size
 
  .data
  g_pReal1: .space 49*49*4, 0
@@ -32,3 +33,4 @@
  g_nRows2: .word 0
  g_nColumns2: .word 0
  g_FactorIm: .real 0
+ g_Size: .word 0

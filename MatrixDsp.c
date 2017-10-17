@@ -121,6 +121,21 @@ int complex_matrix_mult_right_transp_dsp(const CMatrix_t* a, const CMatrix_t* b,
 	return MATRIX_SUCCESS;
 }
 
+int real_matrix_mult_at_b_a_dsp(const Matrix_t* a, const Matrix_t* b, Matrix_t* res, int numDsp)
+{
+	init_dsp(numDsp);
+
+	memcpy(&(g_pReal1[0]), a->pData, a->numRows * a->numCols * sizeof(float));
+	memcpy(&(g_pReal2[0]), b->pData, b->numRows * b->numCols * sizeof(float));
+
+	g_Size = a->numRows;
+
+	run_dsp(numDsp, DSP_ROUTINE_ADDR(RealMatrixMultAtBA));
+	memcpy(res->pData, &(g_pReal3[0]), res->numRows * res->numCols * sizeof(float));
+
+	return MATRIX_SUCCESS;
+}
+
 #else // DSP_OPTIMIZATION
 
 #include "matrix.h"
@@ -144,7 +159,7 @@ int complex_matrix_mult_dsp(const CMatrix_t* a, const CMatrix_t* b, REAL_TYPE fa
 		complex_clone(b, &copy, 1);
 		return complex_matrix_mult(a, &copy, factor_re, factor_im, res);
 	}
-	else 
+	else
 		return complex_matrix_mult(a, b, factor_re, factor_im, res);
 }
 
@@ -173,4 +188,8 @@ int complex_matrix_mult_right_transp_dsp(const CMatrix_t* a, const CMatrix_t* b,
 	return complex_matrix_mult_right_transp(a, b, 1.0f, 0.0f, res);
 }
 
+int real_matrix_mult_at_b_a_dsp(const Matrix_t* a, const Matrix_t* b, Matrix_t* res, int numDsp)
+{
+	return real_matrix_mult_at_b_a(a, b, res);
+}
 #endif // DSP_OPTIMIZATION
