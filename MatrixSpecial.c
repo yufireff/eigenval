@@ -3,7 +3,13 @@
 
 #include "complex.h"
 
-#ifndef DSP_OPTIMIZATION
+#ifdef PREALLOCATION
+#ifdef TEST_RESULT
+static REAL_TYPE buffer[MATRIX_MAX_SIZE * 6];
+#else // TEST_RESULT
+static REAL_TYPE buffer[MATRIX_MAX_SIZE];
+#endif // TEST_RESULT
+#endif // PREALLOCATION
 
 int complex_matrix_mult_right_transp(const CMatrix_t* a, const CMatrix_t* b, REAL_TYPE factor_re, REAL_TYPE factor_im, CMatrix_t* res)
 {
@@ -192,7 +198,6 @@ int real_matrix_mult_at_b_a(const Matrix_t* a, const Matrix_t* b, Matrix_t* res)
 {
 	Matrix_t ba;
 #ifdef PREALLOCATION
-	static REAL_TYPE buffer[MATRIX_MAX_SIZE];
 	ba.pData = buffer;
 #endif // PREALLOCATION
 
@@ -208,4 +213,44 @@ int real_matrix_mult_at_b_a(const Matrix_t* a, const Matrix_t* b, Matrix_t* res)
 	return MATRIX_SUCCESS;
 }
 
-#endif // DSP_OPTIMIZATION
+#ifdef TEST_RESULT
+int complex_a_minus_u_s_ut(const CMatrix_t* a, const CMatrix_t* u, const Matrix_t* s, CMatrix_t *res, float *norm)
+{
+	CMatrix_t us, usut, scmpl;
+	int n = a->numRows, i;
+	if (a->numRows != a->numCols || u->numRows != u->numCols || res->numRows != res->numCols
+		|| a->numRows != u->numRows || a->numRows != res->numRows || s->numRows != 1 || s->numCols != n)
+		return MATRIX_EXCEEDS;
+
+#ifdef PREALLOCATION
+	us.pDataReal = buffer;
+	us.pDataImag = buffer + MATRIX_MAX_SIZE;
+	usut.pDataReal = buffer + 2 * MATRIX_MAX_SIZE;
+	usut.pDataImag = buffer + 3 * MATRIX_MAX_SIZE;
+	scmpl.pDataReal = buffer + 4 * MATRIX_MAX_SIZE;
+	scmpl.pDataImag = buffer + 5 * MATRIX_MAX_SIZE;
+#endif // PREALLOCATION
+	complex_new(n, n, &us);
+	complex_new(n, n, &usut);
+	complex_zeros(n, n, &scmpl, 1);
+
+	for (i = 0; i < n; ++i)
+		scmpl.pDataReal[i*n + i] = s->pData[i];
+
+	complex_matrix_mult(u, &scmpl, 1.0f, 0.0f, &us);
+	complex_matrix_mult_right_transp(&us, u, 1.0f, 0.0f, &usut);
+	complex_matrix_sum(&usut, a, -1.0f, 0.0f, res);
+
+	*norm = 0.0f;
+	for (i = 0; i < n*n; ++i)
+	{
+		*norm += res->pDataReal[i] * res->pDataReal[i];
+		*norm += res->pDataImag[i] * res->pDataImag[i];
+	}
+
+	complex_free(&us);
+	complex_free(&usut);
+	complex_free(&scmpl);
+	return MATRIX_SUCCESS;
+}
+#endif // TEST_RESULT

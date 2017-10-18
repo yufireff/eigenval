@@ -1,4 +1,5 @@
  .global RealMatrixMultAtBA
+ .global MatrixAminusUSUt
  .global g_pReal1
  .global g_pImag1
  .global g_pReal2
@@ -95,3 +96,147 @@ RealMatrixMultAtBA:
 		j.ne RMMAtBAStartRowsLoop2
 	stop
 
+; умножение комплексных матриц A - U * S * U', где S - диагональна€ действительна€
+MatrixAminusUSUt:
+	; U расположена в g_pReal1 и g_pImag1
+	move g_pReal1, a0.s
+	move g_pImag1, a1.s
+	; S расположена в m_pDiag
+	move g_pDiag, a2.s
+	; A расположена в g_pReal2 и g_pImag2
+	; промежуточное произведение считаем в g_pReal3 и g_pImag3
+	move g_pReal3, a5.s
+	move g_pImag3, a6.s
+	; все матрицы квадратные, размера g_Size
+	move g_Size, a7.s
+	move (a7), r8.l ; r8.s = N
+	; квадрат нормы считаем в g_Norm
+
+	; начальное состо€ние адресов
+	move a0.s, r0.s
+	move a1.s, r1.s
+	move a2.s, r2.s
+	move a3.s, r3.s
+	move a4.s, r4.s
+	move a5.s, r5.s
+	move a6.s, r6.s
+; зан€тые регистры ri.l
+; x 1 x 3 x 5 x 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31
+
+	; сначала считаем произведение U * S, где U - квадратна€ комплексна€, S - диагональна€ действительна€
+	; US[i, j] = U[i, j] * S[j]
+	move #0, r7.s ; i
+	MAmUSUtStartDiagMultRowsLoop:
+		move #0, r9.s ; j
+		mpuu r7.s, r8.s, r10.l
+		add r10.s, r0.s, r12.s
+		move r12.s, a0.s
+		add r10.s, r1.s, r12.s
+		move r12.s, a1.s
+		move r2.s, a2.s
+		MAmUSUtStartDiagMultColumnsLoop:
+			move (a0)+, r10.l ; re U[i, j]
+			move (a1)+, r12.l ; im U[i, j]
+			move (a2)+, r14.l ; S[j]
+			; перемножаем
+			fmpy r10.l, r14.l, r16.l
+			fmpy r12.l, r14.l, r18.l
+			; записываем результат
+			move r16.l, (a5)+
+			move r18.l, (a6)+
+			inc r9.s, r9.s ; выход из цикла по столбцам
+			cmp r9.s, r8.s
+			j.ne MAmUSUtStartDiagMultColumnsLoop
+		inc r7.s, r7.s ; выход из цикла по строкам
+		cmp r7.s, r8.s
+		j.ne MAmUSUtStartDiagMultRowsLoop
+
+	move r0.s, a0.s
+	move r1.s, a1.s
+	move r5.s, a5.s
+	move r6.s, a6.s
+	move g_pReal4, a3.s
+	move g_pImag4, a4.s
+; x 1 x 3 x 5 x 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31
+
+	; результат умножаем на U'
+	; в обеих матрицах идЄм по строкам
+	; результат записываем в g_pReal4, g_pImag4
+	move #0, r7.s ; i
+	MAmUSUtStartTranspMultRowsLoop:
+		move #0, r9.s ; j
+		MAmUSUtStartTranspMultColumnsLoop:
+			; начальное значение a5, a6 = base + i * N
+			mpuu r8.s, r7.s, r10.l
+			add r5.s, r10.s, r12.s
+			move r12.s, a5.s
+			add r6.s, r10.s, r12.s
+			move r12.s, a6.s
+			; начальное значение a0, a1 = base + j * N
+			mpuu r8.s, r9.s, r10.l
+			add r0.s, r10.s, r12.s
+			move r12.s, a0.s
+			add r1.s, r10.s, r12.s
+			move r12.s, a1.s
+			; частична€ сумма
+			move #0, r10.l ; re
+			move #0, r12.l ; im
+			do r8.s, MAmUSUtEndInnerLoop
+				move (a5)+, r14.l ; re 1
+				move (a6)+, r16.l ; im 1
+				move (a0)+, r18.l ; re 2
+				move (a1)+, r20.l ; im 2
+				fmpy r14.l, r18.l, r1.l ; re1 * re2
+				fmpy r16.l, r20.l, r3.l ; im1 * im2
+				fmpy r14.l, r20.l, r5.l ; re1 * im2
+				fmpy r18.l, r16.l, r7.l ; re2 * im1
+				fadd r3.l, r1.l, r9.l ; re1*re2 + im1*im2 (знак im2 изменЄн из-за транспонировани€)
+				fsub r5.l, r7.l, r11.l ; re2*im1 - re1*im2  (знак im2 изменЄн из-за транспонировани€)
+				fadd r9.l, r10.l ; re += ...
+			MAmUSUtEndInnerLoop:
+				fadd r11.l, r12.l; im += ...
+			; запоминаем значени€
+			move r10.l, (a3)+
+			move r12.l, (a4)+
+			inc r9.s, r9.s ; выход из цикла по столбцам
+			cmp r9.s, r8.s
+			j.ne MAmUSUtStartTranspMultColumnsLoop
+		inc r7.s, r7.s ; выход из цикла по строкам
+		cmp r7.s, r8.s
+		j.ne MAmUSUtStartTranspMultRowsLoop
+
+	; вычитаем полученную матрицу из ј, результат кладЄм в g_pReal3, g_pImag3
+	; попутно считаем квадрат нормы матрицы
+	; A
+	move g_pReal2, a0.s
+	move g_pImag2, a1.s
+	; U * S * U'
+	move g_pReal4, a3.s
+	move g_pImag4, a4.s
+	; A - U * S * U'
+	move g_pReal3, a5.s
+	move g_pImag3, a6.s
+
+	move #0, r30.l ; норма
+	mpuu r8.s, r8.s, r10.l ; N*N
+	do r10.s, MAmUSUtEndSubtractLoop
+		move (a0)+, r12.l ; re 1
+		move (a1)+, r14.l ; im 1
+		move (a3)+, r16.l ; re 2
+		move (a4)+, r18.l ; im 2
+		fsub r16.l, r12.l, r20.l ; re 1 - re 2
+		fsub r18.l, r14.l, r22.l ; im 1 - im 2
+		; записываем результат
+		move r20.l, (a5)+
+		move r22.l, (a6)+
+		; считаем норму
+		fmpy r20.l, r20.l, r1.l
+		fmpy r22.l, r22.l, r3.l
+		fadd r1.l, r30.l
+	MAmUSUtEndSubtractLoop:
+		fadd r3.l, r30.l
+
+	; записываем норму в g_Norm
+	move g_Norm, a7.s
+	move r30.l, (a7)
+	stop

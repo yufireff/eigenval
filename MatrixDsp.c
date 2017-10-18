@@ -136,6 +136,27 @@ int real_matrix_mult_at_b_a_dsp(const Matrix_t* a, const Matrix_t* b, Matrix_t* 
 	return MATRIX_SUCCESS;
 }
 
+int complex_a_minus_u_s_ut_dsp(const CMatrix_t* a, const CMatrix_t* u, const Matrix_t* s, CMatrix_t *res, float *norm, int numDsp)
+{
+	init_dsp(numDsp);
+
+	memcpy(&(g_pReal1[0]), u->pDataReal, u->numRows * u->numCols * sizeof(float));
+	memcpy(&(g_pImag1[0]), u->pDataImag, u->numRows * u->numCols * sizeof(float));
+	memcpy(&(g_pReal2[0]), a->pDataReal, a->numRows * a->numCols * sizeof(float));
+	memcpy(&(g_pImag2[0]), a->pDataImag, a->numRows * a->numCols * sizeof(float));
+	memcpy(&(g_pDiag[0]), s->pData, s->numRows * s->numCols * sizeof(float));
+
+	g_Size = a->numRows;
+
+	run_dsp(numDsp, DSP_ROUTINE_ADDR(MatrixAminusUSUt));
+
+	memcpy(res->pDataReal, &(g_pReal3[0]), res->numRows * res->numCols * sizeof(float));
+	memcpy(res->pDataImag, &(g_pImag3[0]), res->numRows * res->numCols * sizeof(float));
+	*norm = g_Norm;
+
+	return MATRIX_SUCCESS;
+}
+
 #else // DSP_OPTIMIZATION
 
 #include "matrix.h"
@@ -191,5 +212,10 @@ int complex_matrix_mult_right_transp_dsp(const CMatrix_t* a, const CMatrix_t* b,
 int real_matrix_mult_at_b_a_dsp(const Matrix_t* a, const Matrix_t* b, Matrix_t* res, int numDsp)
 {
 	return real_matrix_mult_at_b_a(a, b, res);
+}
+
+int complex_a_minus_u_s_ut_dsp(const CMatrix_t* a, const CMatrix_t* u, const Matrix_t* s, CMatrix_t *res, float *norm, int numDsp)
+{
+	return complex_a_minus_u_s_ut(a, u, s, res, norm);
 }
 #endif // DSP_OPTIMIZATION

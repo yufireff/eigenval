@@ -20,11 +20,27 @@ int main(void)
 		1.6, 4.2, 6.6, 3.4,
 		2.8, 3.0, 9.3, 5.5
 	};
+    float uData[4*4] =
+	{
+		3.5, 3.6, 5.4, 0.5,
+		4.1, 7.4, 2.5, 9.4,
+		1.3, 3.2, 4.7, 2.2,
+		9.6, 1.0, 3.7, 7.2
+	};
+	float uImData[4*4] =
+	{
+		3.3, 9.5, 3.8, 1.5,
+		1.5, 5.1, 4.7, 2.2,
+		8.6, 1.2, 5.6, 6.4,
+		0.8, 7.0, 9.3, 4.5
+	};
+    float sData [4] = { 2.5, 4.7, 6.8, 3.1 };
 	float bData[16], bImData[16];
+    float norm  = 0.0f;
 	//float one = 1.0f;
-	Matrix_t A, B, C;
-    CMatrix_t Ac, Bc;
-    A.numRows = 4;
+	Matrix_t A, B, C, S;
+    CMatrix_t Ac, Uc, Bc;
+    /*A.numRows = 4;
     A.numCols = 4;
     A.pData = aData;
     B.numRows = 4;
@@ -35,15 +51,23 @@ int main(void)
     C.pData = bData;
     real_matrix_mult_at_b_a_dsp(&A, &B, &C, 0);
 
+    S.numRows = 1;
+    S.numCols = 4;
+    S.pData = sData;
 	Ac.numRows = 4;
 	Ac.numCols = 4;
 	Ac.pDataReal = (float*)aData;
 	Ac.pDataImag = (float*)aImData;
+    Uc.numRows = 4;
+	Uc.numCols = 4;
+	Uc.pDataReal = (float*)uData;
+	Uc.pDataImag = (float*)uImData;
 	Bc.numRows = 4;
 	Bc.numCols = 4;
 	Bc.pDataReal = (float*)bData;
 	Bc.pDataImag = (float*)bImData;
-	inv_dsp(&Ac, &Bc, 0);   */
+    complex_a_minus_u_s_ut_dsp(&Ac, &Uc, &S, &Bc, &norm, 0);
+	//inv_dsp(&Ac, &Bc, 0);
 	/*float aData[2*3] =
 	{
 		1.5, 4.6, 7.4,
@@ -106,7 +130,6 @@ int main(void)
 	//complex_matrix_mult_dsp(&Ac, &Bc, 1.0f, 0.0f, &Cc, 0);
      */
 
-
 #define N 20
 
 	REAL_TYPE realA[N*N] =
@@ -166,8 +189,6 @@ int main(void)
 	Matrix_t S;
 	CMatrix_t U;
 
-	REAL_TYPE lambda;
-
 	A.numRows = N;
 	A.numCols = N;
 	A.pDataReal = realA;
@@ -193,7 +214,5 @@ int main(void)
 	complex_new(N, N, &U);
 
 	eig_symm_triag(&A, 0.01f, &S, &U);
-	//lambda = eig_symm_triag_only_one(&A, 0.01f, &U);
-
 	return 0;
 }

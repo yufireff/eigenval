@@ -8,6 +8,7 @@ extern int RealMatrixMultLeftTransp;
 extern int ComplexMatrixMultLeftTransp;
 extern int ComplexMatrixMultRightTransp;
 extern int RealMatrixMultAtBA;
+extern int MatrixAminusUSUt;
 
 extern float g_pReal1[49*49];
 extern float g_pImag1[49*49];
@@ -15,6 +16,7 @@ extern float g_pReal2[49*49];
 extern float g_pImag2[49*49];
 extern float g_pReal3[49*49];
 extern float g_pImag3[49*49];
+extern float g_pDiag[49];
 
 extern float g_Factor;
 extern float g_FactorIm;
@@ -23,6 +25,7 @@ extern int g_nColumns1;
 extern int g_nRows2;
 extern int g_nColumns2;
 extern int g_Size;
+extern float g_Norm;
 
 void init_dsp(int dspNum);
 void run_dsp(int dspNum, unsigned int command);

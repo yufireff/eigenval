@@ -477,7 +477,7 @@ void qr_symm_real(const Matrix_t* T, REAL_TYPE tol, Matrix_t* U, Matrix_t* D)
 		real_free(&Q);
 }
 
-void eig_symm_triag(const CMatrix_t* A, REAL_TYPE tol, Matrix_t* S, CMatrix_t* U)
+int eig_symm_triag(const CMatrix_t* A, REAL_TYPE tol, Matrix_t* S, CMatrix_t* U)
 // нахождение собственных значений комплексной матрицы А с точночтью tol
 // S - вектор-строка получившихся собственных значений
 // U - матрица собственных векторов
@@ -491,8 +491,10 @@ void eig_symm_triag(const CMatrix_t* A, REAL_TYPE tol, Matrix_t* S, CMatrix_t* U
 	Matrix_t T, Q, Ss; // Q не удалять! у неё общий буфер с Qcmpl!
 	CMatrix_t P, Qcmpl;
 	int indices[VECTOR_MAX_SIZE];
+	int result = MATRIX_SUCCESS;
 #ifdef TEST_RESULT
-	CMatrix_t US, USUt, test, Scmpl;
+	CMatrix_t test;
+	float norm = 0.0f;
 #endif // TEST_RESULT
 
 #ifdef PREALLOCATION
@@ -506,15 +508,9 @@ void eig_symm_triag(const CMatrix_t* A, REAL_TYPE tol, Matrix_t* S, CMatrix_t* U
 	Qcmpl.pDataImag = buffer + 5 * MATRIX_MAX_SIZE;
 
 #ifdef TEST_RESULT
-	static REAL_TYPE bufferTest[MATRIX_MAX_SIZE * 2 * 4];
-	US.pDataReal = buffer;
-	US.pDataImag = buffer + MATRIX_MAX_SIZE;
-	USUt.pDataReal = buffer + 2 * MATRIX_MAX_SIZE;
-	USUt.pDataImag = buffer + 3 * MATRIX_MAX_SIZE;
-	test.pDataReal = buffer + 4 * MATRIX_MAX_SIZE;
-	test.pDataImag = buffer + 5 * MATRIX_MAX_SIZE;
-	Scmpl.pDataReal = buffer + 6 * MATRIX_MAX_SIZE;
-	Scmpl.pDataImag = buffer + 7 * MATRIX_MAX_SIZE;
+	static REAL_TYPE bufferTest[MATRIX_MAX_SIZE * 2];
+	test.pDataReal = bufferTest;
+	test.pDataImag = bufferTest + MATRIX_MAX_SIZE;
 #endif // TEST_RESULT
 #endif // PREALLOCATION
 
@@ -546,26 +542,17 @@ void eig_symm_triag(const CMatrix_t* A, REAL_TYPE tol, Matrix_t* S, CMatrix_t* U
 	complex_swap_columns(U, indices);
 
 #ifdef TEST_RESULT
-	complex_new(n, n, &US);
-	complex_new(n, n, &USUt);
 	complex_new(n, n, &test);
-	complex_zeros(n, n, &Scmpl, 1);
-
-	for (i = 0; i < S->numCols; ++i)
-		Scmpl.pDataReal[i*S->numCols + i] = S->pData[i];
-
-	complex_matrix_mult_dsp(U, &Scmpl, 1.0f, 0.0f, &US, 0);
-	complex_matrix_mult_right_transp_dsp(&US, U, &USUt, 0);
-	complex_matrix_sum(&USUt, A, -1.0f, 0.0f, &test);
-
-	complex_free(&US);
-	complex_free(&USUt);
+	complex_a_minus_u_s_ut_dsp(A, U, S, &test, &norm, 0);
+	if (norm > tol)
+		result = MATRIX_EXCEEDS;
 	complex_free(&test);
-	complex_free(&Scmpl);
 #endif // TEST_RESULT
 
 	real_free(&T);
 	complex_free(&Qcmpl);
 	real_free(&Ss);
 	complex_free(&P);
+
+	return result;
 }
