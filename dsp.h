@@ -32,4 +32,6 @@ void run_dsp(int dspNum, unsigned int command);
 
 #define DSP_ROUTINE_ADDR(x) ((unsigned int)&x - 0xb8440000)>>2
 
+unsigned int GetCP0_Count();
+
 #endif // _DSP_H_

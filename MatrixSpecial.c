@@ -73,11 +73,13 @@ int real_matrix_mult_left_transp(const Matrix_t* a, const Matrix_t* b, REAL_TYPE
 
 int complex_matrix_mult_right_transp_d(const CMatrix_td* a, const CMatrix_td* b, CMatrix_td* res)
 {
-	int i, j, k, i1, j1;
+	int i, j, k;
 
-	double real, imag;
-	double x = 0.0, y = 0.0;
-
+	double real, imag, x = 0.0, y = 0.0;
+	double *pReal1, *pImag1;
+	double *pReal2, *pImag2;
+	double *pReal3 = res->pDataReal, *pImag3 = res->pDataImag;
+	
 	if (a->numCols != b->numCols || res->numRows != a->numRows || res->numCols != b->numRows)
 		return MATRIX_EXCEEDS;
 
@@ -85,21 +87,23 @@ int complex_matrix_mult_right_transp_d(const CMatrix_td* a, const CMatrix_td* b,
 	{
 		for (j = 0; j < b->numRows; ++j)
 		{
+			k = i * a->numCols;
+			pReal1 = a->pDataReal + k;
+			pImag1 = a->pDataImag + k;
+			k = j * b->numCols;
+			pReal2 = b->pDataReal + k;
+			pImag2 = b->pDataImag + k;
 			real = 0.0;
 			imag = 0.0;
 			for (k = 0; k < a->numCols; ++k)
 			{
-				i1 = i*a->numCols + k;
-				j1 = j*b->numCols + k;
-				complex_mult_d(a->pDataReal[i1], a->pDataImag[i1],
-					b->pDataReal[j1], -b->pDataImag[j1], &x, &y);
+				complex_mult_d(*pReal1++, *pImag1++,
+					*pReal2++, -(*pImag2++), &x, &y);
 				real += x;
 				imag += y;
 			}
-			k = i*res->numCols + j;
-			res->pDataReal[k] = real;
-			res->pDataImag[k] = imag;
-			//complex_mult_d(real, img, factor_re, factor_im, res->pDataReal + k, res->pDataImag + k);
+			*pReal3++ = real;
+			*pImag3++ = imag;
 		}
 	}
 
@@ -254,3 +258,4 @@ int complex_a_minus_u_s_ut(const CMatrix_t* a, const CMatrix_t* u, const Matrix_
 	return MATRIX_SUCCESS;
 }
 #endif // TEST_RESULT
+

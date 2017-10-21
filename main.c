@@ -3,6 +3,7 @@
 #include "settings.h"
 #include "MatrixSpecial.h"
 #include "MatrixDsp.h"
+#include "dsp.h"
 
 int main(void)
 {
@@ -130,6 +131,8 @@ int main(void)
 	//complex_matrix_mult_dsp(&Ac, &Bc, 1.0f, 0.0f, &Cc, 0);
      */
 
+     unsigned int start, finish, dt;
+
 #define N 20
 
 	REAL_TYPE realA[N*N] =
@@ -212,7 +215,9 @@ int main(void)
 
 	real_new(1, N, &S);
 	complex_new(N, N, &U);
-
+	start =  GetCP0_Count();
 	eig_symm_triag(&A, 0.01f, &S, &U);
+	finish =  GetCP0_Count();
+	dt = finish - start;
 	return 0;
 }

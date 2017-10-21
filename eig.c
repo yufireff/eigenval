@@ -165,7 +165,6 @@ void complex_triag(const CMatrix_t* A, Matrix_t* T, CMatrix_t* P)
 		complex_clone_d(&TComplex, &Tcopy, create);
 		complex_matrix_sum_d(&TComplex, &qut_uqt, -1.0f, 0.0f, &TComplex);
 
-
 		//			Pk = eye(m,m,'like',A);
 		complex_eye_d(m, &Pk, create);
 		//			Pk = Pk - w*u*u';

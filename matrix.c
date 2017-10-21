@@ -798,7 +798,7 @@ void cnorm2_d(double * a_real, double * a_imag, double * norm2, uint32_t dir, ui
 
 int complex_matrix_sum_d(const CMatrix_td* a, const CMatrix_td* b, double factor_re, double factor_im, CMatrix_td* res)
 {
-	int i, j, idx;
+	int i, j, k = 0;
 	double re, im;
 
 	if (a->numRows != b->numRows || a->numRows != res->numRows
@@ -809,10 +809,11 @@ int complex_matrix_sum_d(const CMatrix_td* a, const CMatrix_td* b, double factor
 	{
 		for (j = 0; j < a->numCols; ++j)
 		{
-			idx = i*a->numCols + j;
-			complex_mult_d(factor_re, factor_im, b->pDataReal[idx], b->pDataImag[idx], &re, &im);
-			res->pDataReal[idx] = a->pDataReal[idx] + re;
-			res->pDataImag[idx] = a->pDataImag[idx] + im;
+			complex_mult_d(factor_re, factor_im,
+				*(b->pDataReal + k), *(b->pDataImag + k), &re, &im);
+			*(res->pDataReal + k) = *(a->pDataReal+ k) + re;
+			*(res->pDataImag + k) = *(a->pDataImag + k) + im;
+			k++;
 		}
 	}
 
@@ -874,10 +875,12 @@ int complex_scal_prod_d(const CMatrix_td* a, const CMatrix_td* b, double* re, do
 
 int complex_matrix_mult_d(const CMatrix_td* a, const CMatrix_td* b, double factor_re, double factor_im, CMatrix_td* res)
 {
-	int i, j, k, i1, j1;
+	int i, j, k;
 
-	double real, img;
-	double x, y;
+	double real, imag, x = 0.0, y = 0.0;
+	double *pReal1, *pImag1;
+	double *pReal2, *pImag2;
+	double *pReal3 = res->pDataReal, *pImag3 = res->pDataImag;
 
 	if (a->numCols != b->numRows || res->numRows != a->numRows || res->numCols != b->numCols)
 		return MATRIX_EXCEEDS;
@@ -886,19 +889,24 @@ int complex_matrix_mult_d(const CMatrix_td* a, const CMatrix_td* b, double facto
 	{
 		for (j = 0; j < b->numCols; ++j)
 		{
+			k = i * a->numCols;
+			pReal1 = a->pDataReal + k;
+			pImag1 = a->pDataImag + k;
+			pReal2 = b->pDataReal + j;
+			pImag2 = b->pDataImag + j;
 			real = 0.0;
-			img = 0.0;
+			imag = 0.0;
 			for (k = 0; k < a->numCols; ++k)
 			{
-				i1 = i*a->numCols + k;
-				j1 = k*b->numCols + j;
-				complex_mult_d(a->pDataReal[i1], a->pDataImag[i1],
-					b->pDataReal[j1], b->pDataImag[j1], &x, &y);
+				complex_mult_d(*pReal1++, *pImag1++,
+					*pReal2, *pImag2, &x, &y);
+				pReal2 += b->numCols;
+				pImag2 += b->numCols;
 				real += x;
-				img += y;
+				imag += y;
 			}
 			k = i*res->numCols + j;
-			complex_mult_d(real, img, factor_re, factor_im, res->pDataReal + k, res->pDataImag + k);
+			complex_mult_d(real, imag, factor_re, factor_im, res->pDataReal + k, res->pDataImag + k);
 		}
 	}
 

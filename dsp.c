@@ -16,3 +16,13 @@ void run_dsp(int dspNum, unsigned int command)
 	DCSR(dspNum) = 0x4000;
 	while( !(QSTR_DSP & (1<<3)) ) ;
 }
+
+#ifndef WIN32
+inline unsigned int GetCP0_Count() {
+    unsigned int result;
+    asm volatile ("mfc0 %0, $9" :"=r"(result));
+return result;
+}
+#else // WIN32
+	inline unsigned int GetCP0_Count() { return 0; }
+#endif // WIN32
