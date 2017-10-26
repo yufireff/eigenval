@@ -42,6 +42,9 @@
     <ClInclude Include="..\..\MatrixDsp.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\dsp.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\algorithms.c">
@@ -66,6 +69,9 @@
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
     <ClCompile Include="..\..\MatrixDsp.c">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\dsp.c">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
   </ItemGroup>

@@ -422,7 +422,7 @@ int complex_scal_prod(const CMatrix_t* a, const CMatrix_t* b, REAL_TYPE* re, REA
 
 	for (i = 0; i < int_max(a->numRows, a->numCols); ++i)
 	{
-		complex_mult(a->pDataReal[i], a->pDataImag[i], b->pDataReal[i], b->pDataImag[i], &tmp_re, &tmp_im);
+		complex_mult(a->pDataReal[i], -a->pDataImag[i], b->pDataReal[i], b->pDataImag[i], &tmp_re, &tmp_im);
 		*re += tmp_re;
 		*im += tmp_im;
 	}

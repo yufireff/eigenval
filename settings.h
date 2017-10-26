@@ -18,7 +18,10 @@
 #define REAL_TYPE double
 #else
 #define REAL_TYPE float
+#define TRIAG_DOUBLE
 #endif // DOUBLE
+
+
 
 #ifndef WIN32
 #define DSP_OPTIMIZATION

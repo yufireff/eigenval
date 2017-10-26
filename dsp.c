@@ -1,4 +1,6 @@
 #include "dsp.h"
+#include "settings.h"
+#ifdef DSP_OPTIMIZATION
 #include <nvcom_01.h>
 
 #define DSP_MEM_ADDR(x) ((unsigned int)&x - 0xb8400000)>>2
@@ -16,6 +18,7 @@ void run_dsp(int dspNum, unsigned int command)
 	DCSR(dspNum) = 0x4000;
 	while( !(QSTR_DSP & (1<<3)) ) ;
 }
+#endif // DSP_OPTIMIZATION
 
 #ifndef WIN32
 inline unsigned int GetCP0_Count() {
@@ -24,5 +27,5 @@ inline unsigned int GetCP0_Count() {
 return result;
 }
 #else // WIN32
-	inline unsigned int GetCP0_Count() { return 0; }
+	unsigned int GetCP0_Count() { return 0; }
 #endif // WIN32

@@ -130,8 +130,8 @@ int main(void)
 	//real_matrix_mult_dsp(&A, &B, 1.2f, &C, 0);
 	//complex_matrix_mult_dsp(&Ac, &Bc, 1.0f, 0.0f, &Cc, 0);
      */
-
      unsigned int start, finish, dt;
+     float t;
 
 #define N 20
 
@@ -219,5 +219,6 @@ int main(void)
 	eig_symm_triag(&A, 0.01f, &S, &U);
 	finish =  GetCP0_Count();
 	dt = finish - start;
+    t = (float)dt * 1000.0f / 250000000.0f;
 	return 0;
 }

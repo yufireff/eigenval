@@ -24,6 +24,7 @@ SECTIONS {
     settings.*(.text);
     MatrixDsp.*(.text);
     MatrixDsp.*(.text);
+    dummy.*(.text);
   }
  
  .data :
@@ -47,5 +48,6 @@ SECTIONS {
     settings.*(.data);
     MatrixDsp.*(.data);
     MatrixDsp.*(.data);
+    dummy.*(.data);
   }
 }

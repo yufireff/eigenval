@@ -156,6 +156,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\algorithms.h" />
     <ClInclude Include="..\..\complex.h" />
+    <ClInclude Include="..\..\dsp.h" />
     <ClInclude Include="..\..\eig.h" />
     <ClInclude Include="..\..\matrix.h" />
     <ClInclude Include="..\..\MatrixDsp.h" />
@@ -166,6 +167,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\algorithms.c" />
     <ClCompile Include="..\..\complex.c" />
+    <ClCompile Include="..\..\dsp.c" />
     <ClCompile Include="..\..\eig.c" />
     <ClCompile Include="..\..\main.c" />
     <ClCompile Include="..\..\matrix.c" />
