@@ -13,13 +13,13 @@ ComplexMatrixInv:
 ; x 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31
 
 	move #0, a0.l
-	move g_pReal1, a0.s
+	move g_Buffer1, a0.s
 	move #0, a1.l
-	move g_pImag1, a1.s
+	move g_Buffer2, a1.s
 	move #0, a2.l
-	move g_pReal2, a2.s
+	move g_Buffer3d, a2.s
 	move #0, a3.l
-	move g_pImag2, a3.s
+	move g_Buffer4d, a3.s
 
 	; запоминаем начальные адреса
 	move a2, r2.s ; r2.s = a2
@@ -205,8 +205,8 @@ ComplexMatrixInv:
 		; задаём а0 и а1
 		mpuu r4.s, r1.s, r6.l ; r6.s = i * 2N
 		add r6.s, r4.s, r7.s ; r7 = i*2N + i
-		add r2.s, r7.s, r8.s ; r8 = g_pReal2 + i*2N + i
-		add r3.s, r7.s, r9.s ; r9 = g_pImag2 + i*2N + i
+		add r2.s, r7.s, r8.s ; r8 = g_Buffer3d + i*2N + i
+		add r3.s, r7.s, r9.s ; r9 = g_Buffer4d + i*2N + i
 ; x 1 x 3 x 5 x 7 x 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31
 
 		move #0, r10.s ; номер текущей строки j = 0..i-1
@@ -218,9 +218,9 @@ ComplexMatrixInv:
 			add r12.s, r4.s, r11.s; r11.s = j*2N + i
 ; x 1 x 3 x 5 x 7 x 9 x 11 x 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31
 			add r2.s, r11.s, r14.s
-			move r14.s, a2 ; a2 = g_pReal2 + j*2N + i
+			move r14.s, a2 ; a2 = g_Buffer3d + j*2N + i
 			add r3.s, r11.s, r14.s
-			move r14.s, a3 ; a3 = g_pImag2 + j*2N + i
+			move r14.s, a3 ; a3 = g_Buffer4d + j*2N + i
 			; запоминаем узловой элемент
 			move (a2), r14.l ; re 1
 			move (a3), r16.l ; im 1
@@ -258,8 +258,8 @@ ComplexMatrixInv:
 ; x 1 x 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31
 
 	; обратная матрица найдена. копируем результат в буфер 1
-	move g_pReal1, a0.s
-	move g_pImag1, a1.s
+	move g_Buffer1, a0.s
+	move g_Buffer2, a1.s
 	add r2.s, r0.s, r2.s
 	add r3.s, r0.s, r3.s
 	move #0, r4.s ; i

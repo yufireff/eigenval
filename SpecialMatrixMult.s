@@ -1,11 +1,11 @@
  .global RealMatrixMultAtBA
  .global MatrixAminusUSUt
- .global g_pReal1
- .global g_pImag1
- .global g_pReal2
- .global g_pImag2
- .global g_pReal3
- .global g_pImag3
+ .global g_Buffer1
+ .global g_Buffer2
+ .global g_Buffer3d
+ .global g_Buffer4d
+ .global g_Buffer5
+ .global g_Buffer6
  .global g_Factor
  .global g_FactorIm
  .global g_nRows1
@@ -15,10 +15,10 @@
 
 ; умножение действительных матриц A' * B * A
 RealMatrixMultAtBA:
-	move g_pReal1, a0.s
-	move g_pReal2, a1.s
-	move g_pReal3, a2.s
-	move g_pImag1, a3.s ; используем буфер Imag1 дл€ промежуточных вычислений
+	move g_Buffer1, a0.s
+	move g_Buffer3d, a1.s
+	move g_Buffer5, a2.s
+	move g_Buffer2, a3.s ; используем буфер Imag1 дл€ промежуточных вычислений
 	; начальные значеи€ адресов
 	move a0.s, r0.s
 	move a1.s, r1.s
@@ -98,15 +98,15 @@ RealMatrixMultAtBA:
 
 ; умножение комплексных матриц A - U * S * U', где S - диагональна€ действительна€
 MatrixAminusUSUt:
-	; U расположена в g_pReal1 и g_pImag1
-	move g_pReal1, a0.s
-	move g_pImag1, a1.s
+	; U расположена в g_Buffer1 и g_Buffer2
+	move g_Buffer1, a0.s
+	move g_Buffer2, a1.s
 	; S расположена в m_pDiag
 	move g_pDiag, a2.s
-	; A расположена в g_pReal2 и g_pImag2
-	; промежуточное произведение считаем в g_pReal3 и g_pImag3
-	move g_pReal3, a5.s
-	move g_pImag3, a6.s
+	; A расположена в g_Buffer3d и g_Buffer4d
+	; промежуточное произведение считаем в g_Buffer5 и g_Buffer6
+	move g_Buffer5, a5.s
+	move g_Buffer6, a6.s
 	; все матрицы квадратные, размера g_Size
 	move g_Size, a7.s
 	move (a7), r8.l ; r8.s = N
@@ -155,13 +155,13 @@ MatrixAminusUSUt:
 	move r1.s, a1.s
 	move r5.s, a5.s
 	move r6.s, a6.s
-	move g_pReal4, a3.s
-	move g_pImag4, a4.s
+	move g_Buffer7, a3.s
+	move g_Buffer8, a4.s
 ; x 1 x 3 x 5 x 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31
 
 	; результат умножаем на U'
 	; в обеих матрицах идЄм по строкам
-	; результат записываем в g_pReal4, g_pImag4
+	; результат записываем в g_Buffer7, g_Buffer8
 	move #0, r7.s ; i
 	MAmUSUtStartTranspMultRowsLoop:
 		move #0, r9.s ; j
@@ -205,17 +205,17 @@ MatrixAminusUSUt:
 		cmp r7.s, r8.s
 		j.ne MAmUSUtStartTranspMultRowsLoop
 
-	; вычитаем полученную матрицу из ј, результат кладЄм в g_pReal3, g_pImag3
+	; вычитаем полученную матрицу из ј, результат кладЄм в g_Buffer5, g_Buffer6
 	; попутно считаем квадрат нормы матрицы
 	; A
-	move g_pReal2, a0.s
-	move g_pImag2, a1.s
+	move g_Buffer3d, a0.s
+	move g_Buffer4d, a1.s
 	; U * S * U'
-	move g_pReal4, a3.s
-	move g_pImag4, a4.s
+	move g_Buffer7, a3.s
+	move g_Buffer8, a4.s
 	; A - U * S * U'
-	move g_pReal3, a5.s
-	move g_pImag3, a6.s
+	move g_Buffer5, a5.s
+	move g_Buffer6, a6.s
 
 	move #0, r30.l ; норма
 	mpuu r8.s, r8.s, r10.l ; N*N

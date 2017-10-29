@@ -10,12 +10,12 @@ extern int ComplexMatrixMultRightTransp;
 extern int RealMatrixMultAtBA;
 extern int MatrixAminusUSUt;
 
-extern float g_pReal1[49*49];
-extern float g_pImag1[49*49];
-extern float g_pReal2[49*49];
-extern float g_pImag2[49*49];
-extern float g_pReal3[49*49];
-extern float g_pImag3[49*49];
+extern float g_Buffer1[49*49];
+extern float g_Buffer2[49*49];
+extern float g_Buffer3d[49*49];
+extern float g_Buffer4d[49*49];
+extern float g_Buffer5[49*49];
+extern float g_Buffer6[49*49];
 extern float g_pDiag[49];
 
 extern float g_Factor;

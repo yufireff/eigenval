@@ -9,10 +9,10 @@ int complex_matrix_mult_dsp(const CMatrix_t* a, const CMatrix_t* b, REAL_TYPE fa
 {
 	init_dsp(numDsp);
 
-	memcpy(&(g_pReal1[0]), a->pDataReal, a->numRows * a->numCols * sizeof(float));
-	memcpy(&(g_pReal2[0]), b->pDataReal, b->numRows * b->numCols * sizeof(float));
-	memcpy(&(g_pImag1[0]), a->pDataImag, a->numRows * a->numCols * sizeof(float));
-	memcpy(&(g_pImag2[0]), b->pDataImag, b->numRows * b->numCols * sizeof(float));
+	memcpy(&(g_Buffer1[0]), a->pDataReal, a->numRows * a->numCols * sizeof(float));
+	memcpy(&(g_Buffer3d[0]), b->pDataReal, b->numRows * b->numCols * sizeof(float));
+	memcpy(&(g_Buffer2[0]), a->pDataImag, a->numRows * a->numCols * sizeof(float));
+	memcpy(&(g_Buffer4d[0]), b->pDataImag, b->numRows * b->numCols * sizeof(float));
 
 	g_Factor = factor_re;
 	g_FactorIm = factor_im;
@@ -21,8 +21,8 @@ int complex_matrix_mult_dsp(const CMatrix_t* a, const CMatrix_t* b, REAL_TYPE fa
 	g_nColumns2 = b->numCols;
 
 	run_dsp(numDsp, DSP_ROUTINE_ADDR(ComplexMatrixMult));
-	memcpy(res->pDataReal, &(g_pReal3[0]), res->numRows * res->numCols * sizeof(float));
-	memcpy(res->pDataImag, &(g_pImag3[0]), res->numRows * res->numCols * sizeof(float));
+	memcpy(res->pDataReal, &(g_Buffer5[0]), res->numRows * res->numCols * sizeof(float));
+	memcpy(res->pDataImag, &(g_Buffer6[0]), res->numRows * res->numCols * sizeof(float));
 
 	return MATRIX_SUCCESS;
 }
@@ -31,8 +31,8 @@ int real_matrix_mult_dsp(const Matrix_t* a, const Matrix_t* b, REAL_TYPE factor,
 {
 	init_dsp(numDsp);
 
-	memcpy(&(g_pReal1[0]), a->pData, a->numRows * a->numCols * sizeof(float));
-	memcpy(&(g_pReal2[0]), b->pData, b->numRows * b->numCols * sizeof(float));
+	memcpy(&(g_Buffer1[0]), a->pData, a->numRows * a->numCols * sizeof(float));
+	memcpy(&(g_Buffer3d[0]), b->pData, b->numRows * b->numCols * sizeof(float));
 
 	g_Factor = factor;
 	g_nRows1 = a->numRows;
@@ -40,7 +40,7 @@ int real_matrix_mult_dsp(const Matrix_t* a, const Matrix_t* b, REAL_TYPE factor,
 	g_nColumns2 = b->numCols;
 
 	run_dsp(numDsp, DSP_ROUTINE_ADDR(RealMatrixMult));
-	memcpy(res->pData, &(g_pReal3[0]), res->numRows * res->numCols * sizeof(float));
+	memcpy(res->pData, &(g_Buffer5[0]), res->numRows * res->numCols * sizeof(float));
 
 	return MATRIX_SUCCESS;
 }
@@ -49,14 +49,14 @@ int inv_dsp(const CMatrix_t* a, CMatrix_t* ainv, int numDsp)
 {
     init_dsp(numDsp);
 
-	memcpy(&(g_pReal1[0]), a->pDataReal, a->numRows * a->numCols * sizeof(float));
-	memcpy(&(g_pImag1[0]), a->pDataImag, a->numRows * a->numCols * sizeof(float));
+	memcpy(&(g_Buffer1[0]), a->pDataReal, a->numRows * a->numCols * sizeof(float));
+	memcpy(&(g_Buffer2[0]), a->pDataImag, a->numRows * a->numCols * sizeof(float));
 
 	g_nRows1 = a->numRows;
 	run_dsp(numDsp, DSP_ROUTINE_ADDR(ComplexMatrixInv));
 
-	memcpy(ainv->pDataReal, &(g_pReal1[0]), ainv->numRows * ainv->numCols * sizeof(float));
-	memcpy(ainv->pDataImag, &(g_pImag1[0]), ainv->numRows * ainv->numCols * sizeof(float));
+	memcpy(ainv->pDataReal, &(g_Buffer1[0]), ainv->numRows * ainv->numCols * sizeof(float));
+	memcpy(ainv->pDataImag, &(g_Buffer2[0]), ainv->numRows * ainv->numCols * sizeof(float));
 	return MATRIX_SUCCESS;
 
 }
@@ -65,8 +65,8 @@ int real_matrix_mult_left_transp_dsp(const Matrix_t* a, const Matrix_t* b, REAL_
 {
 	init_dsp(numDsp);
 
-	memcpy(&(g_pReal1[0]), a->pData, a->numRows * a->numCols * sizeof(float));
-	memcpy(&(g_pReal2[0]), b->pData, b->numRows * b->numCols * sizeof(float));
+	memcpy(&(g_Buffer1[0]), a->pData, a->numRows * a->numCols * sizeof(float));
+	memcpy(&(g_Buffer3d[0]), b->pData, b->numRows * b->numCols * sizeof(float));
 
 	g_Factor = factor;
 	g_nRows1 = a->numRows;
@@ -74,7 +74,7 @@ int real_matrix_mult_left_transp_dsp(const Matrix_t* a, const Matrix_t* b, REAL_
 	g_nColumns2 = b->numCols;
 
 	run_dsp(numDsp, DSP_ROUTINE_ADDR(RealMatrixMultLeftTransp));
-	memcpy(res->pData, &(g_pReal3[0]), res->numRows * res->numCols * sizeof(float));
+	memcpy(res->pData, &(g_Buffer5[0]), res->numRows * res->numCols * sizeof(float));
 
 	return MATRIX_SUCCESS;
 }
@@ -83,10 +83,10 @@ int complex_matrix_mult_left_transp_dsp(const CMatrix_t* a, const CMatrix_t* b, 
 {
 	init_dsp(numDsp);
 
-	memcpy(&(g_pReal1[0]), a->pDataReal, a->numRows * a->numCols * sizeof(float));
-	memcpy(&(g_pReal2[0]), b->pDataReal, b->numRows * b->numCols * sizeof(float));
-	memcpy(&(g_pImag1[0]), a->pDataImag, a->numRows * a->numCols * sizeof(float));
-	memcpy(&(g_pImag2[0]), b->pDataImag, b->numRows * b->numCols * sizeof(float));
+	memcpy(&(g_Buffer1[0]), a->pDataReal, a->numRows * a->numCols * sizeof(float));
+	memcpy(&(g_Buffer3d[0]), b->pDataReal, b->numRows * b->numCols * sizeof(float));
+	memcpy(&(g_Buffer2[0]), a->pDataImag, a->numRows * a->numCols * sizeof(float));
+	memcpy(&(g_Buffer4d[0]), b->pDataImag, b->numRows * b->numCols * sizeof(float));
 
 
 	g_nRows1 = a->numRows;
@@ -94,8 +94,8 @@ int complex_matrix_mult_left_transp_dsp(const CMatrix_t* a, const CMatrix_t* b, 
 	g_nColumns2 = b->numCols;
 
 	run_dsp(numDsp, DSP_ROUTINE_ADDR(ComplexMatrixMultLeftTransp));
-	memcpy(res->pDataReal, &(g_pReal3[0]), res->numRows * res->numCols * sizeof(float));
-	memcpy(res->pDataImag, &(g_pImag3[0]), res->numRows * res->numCols * sizeof(float));
+	memcpy(res->pDataReal, &(g_Buffer5[0]), res->numRows * res->numCols * sizeof(float));
+	memcpy(res->pDataImag, &(g_Buffer6[0]), res->numRows * res->numCols * sizeof(float));
 
 	return MATRIX_SUCCESS;
 }
@@ -104,10 +104,10 @@ int complex_matrix_mult_right_transp_dsp(const CMatrix_t* a, const CMatrix_t* b,
 {
 	init_dsp(numDsp);
 
-	memcpy(&(g_pReal1[0]), a->pDataReal, a->numRows * a->numCols * sizeof(float));
-	memcpy(&(g_pReal2[0]), b->pDataReal, b->numRows * b->numCols * sizeof(float));
-	memcpy(&(g_pImag1[0]), a->pDataImag, a->numRows * a->numCols * sizeof(float));
-	memcpy(&(g_pImag2[0]), b->pDataImag, b->numRows * b->numCols * sizeof(float));
+	memcpy(&(g_Buffer1[0]), a->pDataReal, a->numRows * a->numCols * sizeof(float));
+	memcpy(&(g_Buffer3d[0]), b->pDataReal, b->numRows * b->numCols * sizeof(float));
+	memcpy(&(g_Buffer2[0]), a->pDataImag, a->numRows * a->numCols * sizeof(float));
+	memcpy(&(g_Buffer4d[0]), b->pDataImag, b->numRows * b->numCols * sizeof(float));
 
 
 	g_nRows1 = a->numRows;
@@ -115,8 +115,8 @@ int complex_matrix_mult_right_transp_dsp(const CMatrix_t* a, const CMatrix_t* b,
 	g_nRows2 = b->numRows;
 
 	run_dsp(numDsp, DSP_ROUTINE_ADDR(ComplexMatrixMultRightTransp));
-	memcpy(res->pDataReal, &(g_pReal3[0]), res->numRows * res->numCols * sizeof(float));
-	memcpy(res->pDataImag, &(g_pImag3[0]), res->numRows * res->numCols * sizeof(float));
+	memcpy(res->pDataReal, &(g_Buffer5[0]), res->numRows * res->numCols * sizeof(float));
+	memcpy(res->pDataImag, &(g_Buffer6[0]), res->numRows * res->numCols * sizeof(float));
 
 	return MATRIX_SUCCESS;
 }
@@ -125,13 +125,13 @@ int real_matrix_mult_at_b_a_dsp(const Matrix_t* a, const Matrix_t* b, Matrix_t* 
 {
 	init_dsp(numDsp);
 
-	memcpy(&(g_pReal1[0]), a->pData, a->numRows * a->numCols * sizeof(float));
-	memcpy(&(g_pReal2[0]), b->pData, b->numRows * b->numCols * sizeof(float));
+	memcpy(&(g_Buffer1[0]), a->pData, a->numRows * a->numCols * sizeof(float));
+	memcpy(&(g_Buffer3d[0]), b->pData, b->numRows * b->numCols * sizeof(float));
 
 	g_Size = a->numRows;
 
 	run_dsp(numDsp, DSP_ROUTINE_ADDR(RealMatrixMultAtBA));
-	memcpy(res->pData, &(g_pReal3[0]), res->numRows * res->numCols * sizeof(float));
+	memcpy(res->pData, &(g_Buffer5[0]), res->numRows * res->numCols * sizeof(float));
 
 	return MATRIX_SUCCESS;
 }
@@ -140,18 +140,18 @@ int complex_a_minus_u_s_ut_dsp(const CMatrix_t* a, const CMatrix_t* u, const Mat
 {
 	init_dsp(numDsp);
 
-	memcpy(&(g_pReal1[0]), u->pDataReal, u->numRows * u->numCols * sizeof(float));
-	memcpy(&(g_pImag1[0]), u->pDataImag, u->numRows * u->numCols * sizeof(float));
-	memcpy(&(g_pReal2[0]), a->pDataReal, a->numRows * a->numCols * sizeof(float));
-	memcpy(&(g_pImag2[0]), a->pDataImag, a->numRows * a->numCols * sizeof(float));
+	memcpy(&(g_Buffer1[0]), u->pDataReal, u->numRows * u->numCols * sizeof(float));
+	memcpy(&(g_Buffer2[0]), u->pDataImag, u->numRows * u->numCols * sizeof(float));
+	memcpy(&(g_Buffer3d[0]), a->pDataReal, a->numRows * a->numCols * sizeof(float));
+	memcpy(&(g_Buffer4d[0]), a->pDataImag, a->numRows * a->numCols * sizeof(float));
 	memcpy(&(g_pDiag[0]), s->pData, s->numRows * s->numCols * sizeof(float));
 
 	g_Size = a->numRows;
 
 	run_dsp(numDsp, DSP_ROUTINE_ADDR(MatrixAminusUSUt));
 
-	memcpy(res->pDataReal, &(g_pReal3[0]), res->numRows * res->numCols * sizeof(float));
-	memcpy(res->pDataImag, &(g_pImag3[0]), res->numRows * res->numCols * sizeof(float));
+	memcpy(res->pDataReal, &(g_Buffer5[0]), res->numRows * res->numCols * sizeof(float));
+	memcpy(res->pDataImag, &(g_Buffer6[0]), res->numRows * res->numCols * sizeof(float));
 	*norm = g_Norm;
 
 	return MATRIX_SUCCESS;

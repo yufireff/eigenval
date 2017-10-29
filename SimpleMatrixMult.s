@@ -1,11 +1,11 @@
  .global RealMatrixMult
  .global ComplexMatrixMult
- .global g_pReal1
- .global g_pImag1
- .global g_pReal2
- .global g_pImag2
- .global g_pReal3
- .global g_pImag3
+ .global g_Buffer1
+ .global g_Buffer2
+ .global g_Buffer3d
+ .global g_Buffer4d
+ .global g_Buffer5
+ .global g_Buffer6
  .global g_Factor
  .global g_FactorIm
  .global g_nRows1
@@ -24,9 +24,9 @@ RealMatrixMult:
 	move (a0), r4.l; R4 <- nColumns2
 	move g_Factor, a0.s
 	move (a0), r18.l; R6 <- Factor
-	move g_pReal1, a0.s
-	move g_pReal2, a1.s
-	move g_pReal3, a2.s
+	move g_Buffer1, a0.s
+	move g_Buffer3d, a1.s
+	move g_Buffer5, a2.s
 	; сохраняем исходные значения А0 и А1
 	move a0, r14.s
 	move a1, r16.s
@@ -73,12 +73,12 @@ ComplexMatrixMult:
 	move (a0), r4.l; nColumns2
 	move g_Factor, a0.s
 	move (a0), r18.l; Factor
-	move g_pReal1, a0.s
-	move g_pReal2, a1.s
-	move g_pReal3, a2.s
-	move g_pImag1, a3.s
-	move g_pImag2, a4.s
-	move g_pImag3, a5.s
+	move g_Buffer1, a0.s
+	move g_Buffer3d, a1.s
+	move g_Buffer5, a2.s
+	move g_Buffer2, a3.s
+	move g_Buffer4d, a4.s
+	move g_Buffer6, a5.s
 	; сохраняем исходные значения a0 и a1
 	move a0, r14.s
 	move a1, r16.s

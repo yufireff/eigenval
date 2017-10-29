@@ -1,12 +1,12 @@
  .global RealMatrixMultLeftTransp
  .global ComplexMatrixMultLeftTransp
  .global ComplexMatrixMultRightTransp
- .global g_pReal1
- .global g_pImag1
- .global g_pReal2
- .global g_pImag2
- .global g_pReal3
- .global g_pImag3
+ .global g_Buffer1
+ .global g_Buffer2
+ .global g_Buffer3d
+ .global g_Buffer4d
+ .global g_Buffer5
+ .global g_Buffer6
  .global g_Factor
  .global g_FactorIm
  .global g_nRows1
@@ -18,9 +18,9 @@
 
 ; умножение действительных матриц factor * A' * B
 RealMatrixMultLeftTransp:
-	move g_pReal1, a0.s
-	move g_pReal2, a1.s
-	move g_pReal3, a2.s
+	move g_Buffer1, a0.s
+	move g_Buffer3d, a1.s
+	move g_Buffer5, a2.s
 	; начальные значеия адресов
 	move a0.s, r0.s
 	move a1.s, r1.s
@@ -73,12 +73,12 @@ RealMatrixMultLeftTransp:
 
 ; умножение комплексных матриц A' * B
 ComplexMatrixMultLeftTransp:
-	move g_pReal1, a0.s
-	move g_pImag1, a1.s
-	move g_pReal2, a2.s
-	move g_pImag2, a3.s
-	move g_pReal3, a4.s
-	move g_pImag3, a5.s
+	move g_Buffer1, a0.s
+	move g_Buffer2, a1.s
+	move g_Buffer3d, a2.s
+	move g_Buffer4d, a3.s
+	move g_Buffer5, a4.s
+	move g_Buffer6, a5.s
 	; начальные значения адресов
 	move a0.s, r0.s
 	move a1.s, r1.s
@@ -151,12 +151,12 @@ ComplexMatrixMultLeftTransp:
 
 ; умножение комплексных матриц A * B'
 ComplexMatrixMultRightTransp:
-	move g_pReal1, a0.s
-	move g_pImag1, a1.s
-	move g_pReal2, a2.s
-	move g_pImag2, a3.s
-	move g_pReal3, a4.s
-	move g_pImag3, a5.s
+	move g_Buffer1, a0.s
+	move g_Buffer2, a1.s
+	move g_Buffer3d, a2.s
+	move g_Buffer4d, a3.s
+	move g_Buffer5, a4.s
+	move g_Buffer6, a5.s
 	; начальные значения адресов
 	move a0.s, r0.s
 	move a1.s, r1.s
