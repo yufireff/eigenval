@@ -1,5 +1,5 @@
 #ifndef EIG_H
-#define EIH_H
+#define EIG_H
 
 #include "matrix.h"
 
@@ -13,4 +13,4 @@ int eig_symm_triag(const CMatrix_t* A, REAL_TYPE tol, Matrix_t* S, CMatrix_t* U)
 
 REAL_TYPE eig_symm_triag_only_one(const CMatrix_t* A, REAL_TYPE tol, CMatrix_t* U);
 
-#endif // EIH_H
+#endif // EIG_H

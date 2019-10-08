@@ -27,7 +27,7 @@
  g_Buffer5: .space 49*49*4, 0 ; D (S)
  g_Buffer6: .space 49*49*4, 0 ; Qm
  g_Buffer7: .space 49*49*4, 0 ; Rm
- g_Buffer8: .space 49*49*4, 0
+ g_Buffer8: .space 49*49*4, 0 ; T(p:q, p:q)
  g_pDiag:  .space 49*4, 0
  ; для отладки
  ;g_Buffer1: .space 4*4*4, 0
@@ -47,7 +47,7 @@
  g_nColumns2: .word 0
  g_FactorIm: .real 0
  g_Size: .word 0
- g_p: .word 0
- g_q: .word 0
+ ;g_p: .word 0
+ ;g_q: .word 0
  g_Norm: .real 0
  g_ptr0: .word 0

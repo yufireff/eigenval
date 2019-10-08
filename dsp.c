@@ -1,7 +1,8 @@
 #include "dsp.h"
 #include "settings.h"
+
 #ifdef DSP_OPTIMIZATION
-#include <nvcom_01.h>
+#include "nvcom_01.h"
 
 #define DSP_MEM_ADDR(x) ((unsigned int)&x - 0xb8400000)>>2
 #define DSP_PTR_ADDR(x) ((unsigned int)x - 0xb8400000)>>2
@@ -21,10 +22,11 @@ void run_dsp(int dspNum, unsigned int command)
 #endif // DSP_OPTIMIZATION
 
 #ifndef WIN32
-inline unsigned int GetCP0_Count() {
-    unsigned int result;
-    asm volatile ("mfc0 %0, $9" :"=r"(result));
-return result;
+inline unsigned int GetCP0_Count()
+{
+	unsigned int result;
+	asm volatile ("mfc0 %0, $9" :"=r"(result));
+	return result;
 }
 #else // WIN32
 	unsigned int GetCP0_Count() { return 0; }

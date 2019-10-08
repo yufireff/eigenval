@@ -25,6 +25,8 @@ SECTIONS {
     MatrixDsp.*(.text);
     MatrixDsp.*(.text);
     dummy.*(.text);
+    EigDsp.*(.text);
+    EigDsp.*(.text);
   }
  
  .data :
@@ -49,5 +51,7 @@ SECTIONS {
     MatrixDsp.*(.data);
     MatrixDsp.*(.data);
     dummy.*(.data);
+    EigDsp.*(.data);
+    EigDsp.*(.data);
   }
 }

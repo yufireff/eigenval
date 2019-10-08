@@ -9,6 +9,7 @@ extern int ComplexMatrixMultLeftTransp;
 extern int ComplexMatrixMultRightTransp;
 extern int RealMatrixMultAtBA;
 extern int MatrixAminusUSUt;
+extern int QRSymmReal;
 
 extern float g_Buffer1[49*49];
 extern float g_Buffer2[49*49];
@@ -16,6 +17,7 @@ extern float g_Buffer3d[49*49];
 extern float g_Buffer4d[49*49];
 extern float g_Buffer5[49*49];
 extern float g_Buffer6[49*49];
+extern float g_Buffer7[49*49];
 extern float g_pDiag[49];
 
 extern float g_Factor;

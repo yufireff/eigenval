@@ -10,6 +10,7 @@
 #include "MatrixSpecial.h"
 #include "MatrixDsp.h"
 #include "dsp.h"
+#include "EigDsp.h"
 
 #ifdef TRIAG_DOUBLE
 void complex_triag(const CMatrix_t* A, Matrix_t* T, CMatrix_t* P)
@@ -186,6 +187,10 @@ void complex_triag(const CMatrix_t* A, Matrix_t* T, CMatrix_t* P)
 	double_complex_to_single_real(&TComplex, T, 0);
 	double_complex_to_single_comlpex(&Pd, P, 0);
 #endif // DOUBLE
+
+	for (i = 0; i < T->numCols * T->numRows; ++i)
+		if (f_abs(T->pData[i]) < 1e-6f)
+			T->pData[i] = 0;
 
 	complex_free_d(&TComplex);
 	complex_free_d(&x);
@@ -394,13 +399,19 @@ void givens_rotation_real(REAL_TYPE a, REAL_TYPE b, REAL_TYPE* c, REAL_TYPE* s)
 	{
 		if (f_abs(b) > f_abs(a))
 		{
+			float t0 = 1 / b;
 			tau = -a / b;
+			float t1 = tau*tau;
+			float t2 = 1.0f + tau*tau;
 			*s = 1.0f / sq_rt(1.0f + tau*tau);
 			*c = *s * tau;
 		}
 		else
 		{
+			float t0 = 1 / a;
 			tau = -b / a;
+			float t1 = tau*tau;
+			float t2 = 1.0f + tau*tau;
 			*c = 1.0f / sq_rt(1.0f + tau*tau);
 			*s = *c * tau;
 		}
@@ -437,7 +448,7 @@ void qr_step_symm_real(const Matrix_t* T, Matrix_t* Q, Matrix_t* R)
 //	end
 //end
 {
-	Matrix_t Tcopy, G;
+	Matrix_t Tcopy, G, Qcopy;
 	REAL_TYPE d, mu, x, z, c, s;
 	REAL_TYPE f1;
 	int k, create = 1;
@@ -446,9 +457,10 @@ void qr_step_symm_real(const Matrix_t* T, Matrix_t* Q, Matrix_t* R)
 	int n = T->numCols;
 
 #ifdef PREALLOCATION
-	static REAL_TYPE buffer[MATRIX_MAX_SIZE * 2];
+	static REAL_TYPE buffer[MATRIX_MAX_SIZE * 3];
 	Tcopy.pData = buffer;
 	G.pData = buffer + MATRIX_MAX_SIZE;
+	Qcopy.pData = buffer + 2 * MATRIX_MAX_SIZE;
 #endif // PREALLOCATION
 
 	//	if n == 1
@@ -469,6 +481,10 @@ void qr_step_symm_real(const Matrix_t* T, Matrix_t* Q, Matrix_t* R)
 	//	mu = T(n,n) - T(n,n-1)*T(n,n-1)'/(d + d/norm(d)*sqrt(d*d' + T(n,n-1)*T(n,n-1)'));
 	f1 = Tcopy.pData[n*n - 2];
 	f1 = f1 * f1;
+	float t0 = sq_rt(d*d + f1);
+	float t1 = d + d / f_abs(d)*sq_rt(d*d + f1);
+	float t2 = 1.0 / (d + d / f_abs(d)*sq_rt(d*d + f1));
+	float t3 = f1 / (d + d / f_abs(d)*sq_rt(d*d + f1));
 	mu = Tcopy.pData[n*n - 1] - f1/(d + d/f_abs(d)*sq_rt(d*d + f1));
 
 	//	x = T(1,1) - mu;
@@ -495,7 +511,8 @@ void qr_step_symm_real(const Matrix_t* T, Matrix_t* Q, Matrix_t* R)
 		real_matrix_mult_at_b_a_dsp(&G, &Tcopy, &Tcopy, 0);
 
 		//		Q = Q*G;
-		real_matrix_mult_dsp(Q, &G, 1.0f, Q, 0);
+		real_clone(Q, &Qcopy, ALLOCATE_MATRIX);
+		real_matrix_mult_dsp(&Qcopy, &G, 1.0f, Q, 0);
 
 		//		if k < n-1
 		//			x = T(k+1,k);
@@ -513,6 +530,7 @@ void qr_step_symm_real(const Matrix_t* T, Matrix_t* Q, Matrix_t* R)
 	real_clone(&Tcopy, R, 0);
 
 	real_free(&Tcopy);
+	real_free(&Qcopy);
 	real_free(&G);
 }
 
@@ -562,15 +580,16 @@ void qr_symm_real(const Matrix_t* T, REAL_TYPE tol, Matrix_t* U, Matrix_t* D)
 	//	p = 1;
 	//	q = n;
 	int p = 1, q = n, fl;
-	Matrix_t Tcopy, Tpart, Qm, Rm, Q;
+	Matrix_t Tcopy, Tpart, Qm, Rm, Q, Ucopy;
 
 #ifdef PREALLOCATION
-	static REAL_TYPE buffer[MATRIX_MAX_SIZE * 5];
+	static REAL_TYPE buffer[MATRIX_MAX_SIZE * 6];
 	Tcopy.pData = buffer;
 	Tpart.pData = buffer + MATRIX_MAX_SIZE;
 	Qm.pData = buffer + 2 * MATRIX_MAX_SIZE;
 	Rm.pData = buffer + 3 * MATRIX_MAX_SIZE;
 	Q.pData = buffer + 4 * MATRIX_MAX_SIZE;
+	Ucopy.pData = buffer + 5 * MATRIX_MAX_SIZE;
 #endif // PREALLOCATION
 
 	real_clone(T, &Tcopy, ALLOCATE_MATRIX);
@@ -622,7 +641,8 @@ void qr_symm_real(const Matrix_t* T, REAL_TYPE tol, Matrix_t* U, Matrix_t* D)
 			//			Q(p:q,p:q) = Qm;
 			real_partial_copy(&Qm, 0, 0, size, size, &Q, p-1, p-1);
 			//			U = U*Q;
-			real_matrix_mult_dsp(U, &Q, 1.0f, U, 0);
+			real_clone(U, &Ucopy, ALLOCATE_MATRIX);
+			real_matrix_mult_dsp(&Ucopy, &Q, 1.0f, U, 0);
 
 			real_free(&Tpart);
 			real_free(&Qm);
@@ -636,6 +656,7 @@ void qr_symm_real(const Matrix_t* T, REAL_TYPE tol, Matrix_t* U, Matrix_t* D)
 	real_clone(&Tcopy, D, 0);
 
 	real_free(&Tcopy);
+	real_free(&Ucopy);
 	if (free_q)
 		real_free(&Q);
 }
@@ -693,7 +714,7 @@ int eig_symm_triag(const CMatrix_t* A, REAL_TYPE tol, Matrix_t* S, CMatrix_t* U)
     step =  GetCP0_Count();
     triag = step - prepare;
 
-	qr_symm_real(&T, tol, &Q, &Ss);
+	qr_symm_real_dsp(&T, tol, &Q, &Ss, 0);
 
     step =  GetCP0_Count();
     qr = step - triag;
@@ -715,7 +736,6 @@ int eig_symm_triag(const CMatrix_t* A, REAL_TYPE tol, Matrix_t* S, CMatrix_t* U)
 
     step =  GetCP0_Count();
     mult = step - qr;
-
 
 	special_sort_descending(S->pData, S->numCols, indices);
 	complex_swap_columns(U, indices);

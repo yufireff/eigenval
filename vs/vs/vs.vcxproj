@@ -92,6 +92,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <EnablePREfast>true</EnablePREfast>
+      <DisableLanguageExtensions>true</DisableLanguageExtensions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -158,6 +159,7 @@
     <ClInclude Include="..\..\complex.h" />
     <ClInclude Include="..\..\dsp.h" />
     <ClInclude Include="..\..\eig.h" />
+    <ClInclude Include="..\..\EigDsp.h" />
     <ClInclude Include="..\..\matrix.h" />
     <ClInclude Include="..\..\MatrixDsp.h" />
     <ClInclude Include="..\..\MatrixSpecial.h" />
@@ -169,6 +171,7 @@
     <ClCompile Include="..\..\complex.c" />
     <ClCompile Include="..\..\dsp.c" />
     <ClCompile Include="..\..\eig.c" />
+    <ClCompile Include="..\..\EigDsp.c" />
     <ClCompile Include="..\..\main.c" />
     <ClCompile Include="..\..\matrix.c" />
     <ClCompile Include="..\..\MatrixDsp.c" />

@@ -3,7 +3,7 @@
  .text
 	MatrixRealEye:
 	move g_ptr0, a1.s
-	move (a1.s), r0.s
+	move (a1), r0.l
 	move r0.s, a0.s
 	move g_Size, a7.s
 	move (a7), r0.l ; N

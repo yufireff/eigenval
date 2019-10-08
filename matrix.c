@@ -582,7 +582,7 @@ int real_matrix_mult(const Matrix_t* a, const Matrix_t* b, REAL_TYPE factor, Mat
 {
 	int i, j, k, i1, j1;
 
-	REAL_TYPE sum;
+	REAL_TYPE sum, *pa, *pb, *pres = res->pData;
 
 	if (a->numCols != b->numRows || res->numRows != a->numRows || res->numCols != b->numCols)
 		return MATRIX_EXCEEDS;
@@ -592,13 +592,19 @@ int real_matrix_mult(const Matrix_t* a, const Matrix_t* b, REAL_TYPE factor, Mat
 		for (j = 0; j < b->numCols; ++j)
 		{
 			sum = 0.0f;
+			pa = a->pData + i*a->numCols;
+			pb = b->pData + j;
 			for (k = 0; k < a->numCols; ++k)
 			{
-				i1 = i*a->numCols + k;
+				sum += *pa * *pb;
+				pa++;
+				pb += b->numCols;
+	/*			i1 = i*a->numCols + k;
 				j1 = k*b->numCols + j;
-				sum += a->pData[i1] * b->pData[j1];
+				sum += a->pData[i1] * b->pData[j1];*/
 			}
-			res->pData[i*res->numCols + j] = factor * sum;
+			*pres++ = factor * sum;
+			//res->pData[i*res->numCols + j] = factor * sum;
 		}
 	}
 

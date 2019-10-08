@@ -21,10 +21,9 @@
 #define TRIAG_DOUBLE
 #endif // DOUBLE
 
-
-
 #ifndef WIN32
 #define DSP_OPTIMIZATION
+#define DSP_OPTIMIZATION_FULL
 #endif // WIN32
 
 #define TEST_RESULT
