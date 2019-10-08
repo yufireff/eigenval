@@ -8,7 +8,7 @@ PROVIDE(_mem_size = 0x0000000);
 SECTIONS {
  
  . =0xbfc00000; 
- .text 0xbfc01000 :
+ .text :
   {
      * (.text);
      * (.init)
@@ -40,7 +40,7 @@ SECTIONS {
      *(COMMON)
   }
  
-  . += 0x8000;
+  . += 0x1000;
   PROVIDE(__stack = ALIGN(8));
   . += 0x10;
  

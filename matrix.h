@@ -62,7 +62,7 @@ typedef struct
 	double * pDataImag;
 } CMatrix_td;
 
-
+#ifndef DSP_OPTIMIZATION_FULL
 void dot_prod(REAL_TYPE * a, REAL_TYPE * b,	REAL_TYPE * c, uint32_t dira, uint32_t dirb, uint32_t len);
 
 void cdot_prod(REAL_TYPE * a_real, REAL_TYPE * a_imag, REAL_TYPE * b_real, REAL_TYPE * b_imag,
@@ -79,13 +79,17 @@ int inv(const CMatrix_t* a, CMatrix_t* ainv);
 void complex_zeros(int rows, int columns, CMatrix_t* a, int create);
 
 void complex_eye(int n, CMatrix_t* a, int create);
+#endif // !DSP_OPTIMIZATION_FULL
 
 void complex_free(CMatrix_t* a);
 
+#ifndef DSP_OPTIMIZATION_FULL
 void complex_clone(const CMatrix_t* source, CMatrix_t* destination, int create);
+#endif // !DSP_OPTIMIZATION_FULL
 
 int complex_new(int rows, int columns, CMatrix_t* a);
 
+#ifndef DSP_OPTIMIZATION_FULL
 int complex_partial_copy(const CMatrix_t* source, int source_start_row, int source_start_column,
 	int rows_to_copy, int columns_to_copy,
 	CMatrix_t* destination, int destination_start_row, int destination_start_column);
@@ -93,12 +97,14 @@ int complex_partial_copy(const CMatrix_t* source, int source_start_row, int sour
 int complex_matrix_sum(const CMatrix_t* a, const CMatrix_t* b, REAL_TYPE factor_re, REAL_TYPE factor_im, CMatrix_t* res); // res = a + factor * b
 
 int complex_scal_prod(const CMatrix_t* a, const CMatrix_t* b, REAL_TYPE* re, REAL_TYPE* im);
+#endif // !DSP_OPTIMIZATION_FULL
 
 // -----------
 int real_new(int rows, int columns, Matrix_t* a);
 
 void real_free(Matrix_t* a);
 
+#ifndef DSP_OPTIMIZATION_FULL
 void real_zeros(int rows, int columns, Matrix_t* a, int create);
 
 void real_eye(int n, Matrix_t* a, int create);
@@ -115,6 +121,7 @@ int real_transp(const Matrix_t* a, Matrix_t* b, int create);
 int real_matrix_mult(const Matrix_t* a, const Matrix_t* b, REAL_TYPE factor, Matrix_t* res);
 
 int real_to_complex(const Matrix_t* real, CMatrix_t* compl, int create);
+#endif // ! DSP_OPTIMIZATION_FULL
 
 void complex_swap_columns(CMatrix_t* m, int* new_indices);
 
@@ -138,15 +145,17 @@ void cnorm2_d(double * a_real, double * a_imag, double * norm2, uint32_t dir, ui
 
 int complex_matrix_sum_d(const CMatrix_td* a, const CMatrix_td* b, double factor_re, double factor_im, CMatrix_td* res); // res = a + factor * b
 
+#ifndef DSP_OPTIMIZATION_FULL
 int complex_transp_d(const CMatrix_td* a, CMatrix_td* b, int create);
 
 int complex_scal_prod_d(const CMatrix_td* a, const CMatrix_td* b, double* re, double* im);
+#endif // !DSP_OPTIMIZATION_FULL
 
 int complex_matrix_mult_d(const CMatrix_td* a, const CMatrix_td* b, double factor_re, double factor_im, CMatrix_td* res);
 
 void double_complex_to_single_real(const CMatrix_td* a, Matrix_t* b, int create);
 
-void double_complex_to_single_comlpex(const CMatrix_td* a, CMatrix_t* b, int create); void double_complex_to_single_comlpex(const CMatrix_td* a, CMatrix_t* b, int create);
+void double_complex_to_single_complex(const CMatrix_td* a, CMatrix_t* b, int create);
 
 void complex_free_d(CMatrix_td* a);
 

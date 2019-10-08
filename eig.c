@@ -60,7 +60,7 @@ void complex_triag(const CMatrix_t* A, Matrix_t* T, CMatrix_t* P)
 #ifdef DOUBLE
 	static double buffer[2 *(MATRIX_MAX_SIZE*8 + VECTOR_MAX_SIZE*5)];
 #else // DOUBLE
-	static double buffer[2 * (MATRIX_MAX_SIZE * 10 + VECTOR_MAX_SIZE * 5)];
+	static double buffer[2 * (MATRIX_MAX_SIZE * 7 + VECTOR_MAX_SIZE * 3)];
 #endif // DOUBLE
 	TComplex.pDataReal = buffer;
 	TComplex.pDataImag = buffer + MATRIX_MAX_SIZE;
@@ -72,27 +72,27 @@ void complex_triag(const CMatrix_t* A, Matrix_t* T, CMatrix_t* P)
 	uqt.pDataImag = buffer + 7 * MATRIX_MAX_SIZE;
 	qut_uqt.pDataReal = buffer + 8 * MATRIX_MAX_SIZE;
 	qut_uqt.pDataImag = buffer + 9 * MATRIX_MAX_SIZE;
-	Pk.pDataReal = buffer + 10 * MATRIX_MAX_SIZE;
-	Pk.pDataImag = buffer + 11 * MATRIX_MAX_SIZE;
-	uut.pDataReal = buffer + 12 * MATRIX_MAX_SIZE;
-	uut.pDataImag = buffer + 13 * MATRIX_MAX_SIZE;
-	Pcopy.pDataReal = buffer + 14 * MATRIX_MAX_SIZE;
-	Pcopy.pDataImag = buffer + 15 * MATRIX_MAX_SIZE;
-	x.pDataReal = buffer + 16 * MATRIX_MAX_SIZE;
-	x.pDataImag = buffer + 16 * MATRIX_MAX_SIZE + VECTOR_MAX_SIZE;
-	e.pDataReal = buffer + 16 * MATRIX_MAX_SIZE + 2 * VECTOR_MAX_SIZE;
-	e.pDataImag = buffer + 16 * MATRIX_MAX_SIZE + 3 * VECTOR_MAX_SIZE;
-	u.pDataReal = buffer + 16 * MATRIX_MAX_SIZE + 4 * VECTOR_MAX_SIZE;
-	u.pDataImag = buffer + 16 * MATRIX_MAX_SIZE + 5 * VECTOR_MAX_SIZE;
-	p.pDataReal = buffer + 16 * MATRIX_MAX_SIZE + 6 * VECTOR_MAX_SIZE;
-	p.pDataImag = buffer + 16 * MATRIX_MAX_SIZE + 7 * VECTOR_MAX_SIZE;
-	q.pDataReal = buffer + 16 * MATRIX_MAX_SIZE + 8 * VECTOR_MAX_SIZE;
-	q.pDataImag = buffer + 16 * MATRIX_MAX_SIZE + 9 * VECTOR_MAX_SIZE;
+	Pk.pDataReal = buffer + 4 * MATRIX_MAX_SIZE; // qut
+	Pk.pDataImag = buffer + 5 * MATRIX_MAX_SIZE; // qut
+	uut.pDataReal = buffer + 6 * MATRIX_MAX_SIZE; // uqt
+	uut.pDataImag = buffer + 7 * MATRIX_MAX_SIZE; // uqt
+	Pcopy.pDataReal = buffer + 8 * MATRIX_MAX_SIZE; // qut_uqt
+	Pcopy.pDataImag = buffer + 9 * MATRIX_MAX_SIZE; // qut_uqt
+	x.pDataReal = buffer + 10 * MATRIX_MAX_SIZE;
+	x.pDataImag = buffer + 10 * MATRIX_MAX_SIZE + 1 * VECTOR_MAX_SIZE;
+	e.pDataReal = buffer + 10 * MATRIX_MAX_SIZE + 2 * VECTOR_MAX_SIZE;
+	e.pDataImag = buffer + 10 * MATRIX_MAX_SIZE + 3 * VECTOR_MAX_SIZE;
+	u.pDataReal = buffer + 10 * MATRIX_MAX_SIZE + 4 * VECTOR_MAX_SIZE;
+	u.pDataImag = buffer + 10 * MATRIX_MAX_SIZE + 5 * VECTOR_MAX_SIZE;
+	p.pDataReal = buffer + 10 * MATRIX_MAX_SIZE; // x
+	p.pDataImag = buffer + 10 * MATRIX_MAX_SIZE + 1 * VECTOR_MAX_SIZE; // x
+	q.pDataReal = buffer + 10 * MATRIX_MAX_SIZE + 2 * VECTOR_MAX_SIZE; // e
+	q.pDataImag = buffer + 10 * MATRIX_MAX_SIZE + 3 * VECTOR_MAX_SIZE; // e
 #ifndef DOUBLE
-	Ad.pDataReal = buffer + 16 * MATRIX_MAX_SIZE + 10 * VECTOR_MAX_SIZE;
-	Ad.pDataImag = buffer + 17 * MATRIX_MAX_SIZE + 10 * VECTOR_MAX_SIZE;
-	Pd.pDataReal = buffer + 18 * MATRIX_MAX_SIZE + 10 * VECTOR_MAX_SIZE;
-	Pd.pDataImag = buffer + 19 * MATRIX_MAX_SIZE + 10 * VECTOR_MAX_SIZE;
+	Ad.pDataReal = buffer + 10 * MATRIX_MAX_SIZE + 4 * VECTOR_MAX_SIZE;
+	Ad.pDataImag = buffer + 11 * MATRIX_MAX_SIZE + 4 * VECTOR_MAX_SIZE;
+	Pd.pDataReal = buffer + 12 * MATRIX_MAX_SIZE + 4 * VECTOR_MAX_SIZE;
+	Pd.pDataImag = buffer + 13 * MATRIX_MAX_SIZE + 4 * VECTOR_MAX_SIZE;
 #else // DOUBLE
 	Pd.pDataReal = P->pDataReal;
 	Pd.pDataImag = P->pDataImag;
@@ -103,7 +103,7 @@ void complex_triag(const CMatrix_t* A, Matrix_t* T, CMatrix_t* P)
 
 #ifndef DOUBLE
 	single_to_double(A, &Ad, 1);
-#else // DOUBLE
+#else // !DOUBLE
 	Ad.numRows = A->numRows;
 	Ad.numCols = A->numCols;
 	Ad.pDataReal = A->pDataReal;
@@ -183,9 +183,9 @@ void complex_triag(const CMatrix_t* A, Matrix_t* T, CMatrix_t* P)
 	//		T = real(T);
 #ifdef DOUBLE
 	memcpy(T->pData, TComplex.pDataReal, m*m*sizeof(REAL_TYPE));
-#else // DOUBLE
+#else // !DOUBLE
 	double_complex_to_single_real(&TComplex, T, 0);
-	double_complex_to_single_comlpex(&Pd, P, 0);
+	double_complex_to_single_complex(&Pd, P, 0);
 #endif // DOUBLE
 
 	for (i = 0; i < T->numCols * T->numRows; ++i)
@@ -206,7 +206,7 @@ void complex_triag(const CMatrix_t* A, Matrix_t* T, CMatrix_t* P)
 	complex_free_d(&uut);
 	complex_free_d(&Pcopy);
 }
-#else // TRIAG_DOUBLE
+#else // !TRIAG_DOUBLE
 void complex_triag(const CMatrix_t* A, Matrix_t* T, CMatrix_t* P)
 // Трехдиагонализация Хаусхолдера
 //////////////////////////////
@@ -369,6 +369,7 @@ void complex_triag(const CMatrix_t* A, Matrix_t* T, CMatrix_t* P)
 }
 #endif // TRIAG_DOUBLE
 
+#ifndef DSP_OPTIMIZATION_FULL
 void givens_rotation_real(REAL_TYPE a, REAL_TYPE b, REAL_TYPE* c, REAL_TYPE* s)
 //	Вращения Гивенса
 //	function [c,s] = giv(a,b)
@@ -660,6 +661,7 @@ void qr_symm_real(const Matrix_t* T, REAL_TYPE tol, Matrix_t* U, Matrix_t* D)
 	if (free_q)
 		real_free(&Q);
 }
+#endif // !DSP_OPTIMIZATION_FULL
 
 int eig_symm_triag(const CMatrix_t* A, REAL_TYPE tol, Matrix_t* S, CMatrix_t* U)
 // нахождение собственных значений комплексной матрицы А с точночтью tol

@@ -7,135 +7,12 @@
 
 int main(void)
 {
-	/*float aData[4*4] =
-	{
-		1.5, 4.6, 7.4, 2.5,
-		8.1, 0.4, 3.5, 1.4,
-		3.3, 2.2, 1.7, 7.2,
-		1.6, 2.0, 2.7, 3.2
-	};
-	float aImData[4*4] =
-	{
-		4.3, 9.5, 2.8, 0.5,
-		3.5, 2.1, 1.7, 7.2,
-		1.6, 4.2, 6.6, 3.4,
-		2.8, 3.0, 9.3, 5.5
-	};
-    float uData[4*4] =
-	{
-		3.5, 3.6, 5.4, 0.5,
-		4.1, 7.4, 2.5, 9.4,
-		1.3, 3.2, 4.7, 2.2,
-		9.6, 1.0, 3.7, 7.2
-	};
-	float uImData[4*4] =
-	{
-		3.3, 9.5, 3.8, 1.5,
-		1.5, 5.1, 4.7, 2.2,
-		8.6, 1.2, 5.6, 6.4,
-		0.8, 7.0, 9.3, 4.5
-	};
-    float sData [4] = { 2.5, 4.7, 6.8, 3.1 };
-	float bData[16], bImData[16];
-    float norm  = 0.0f;
-	//float one = 1.0f;
-	Matrix_t A, B, C, S;
-    CMatrix_t Ac, Uc, Bc;
-    /*A.numRows = 4;
-    A.numCols = 4;
-    A.pData = aData;
-    B.numRows = 4;
-    B.numCols = 4;
-    B.pData = aImData;
-    C.numRows = 4;
-    C.numCols = 4;
-    C.pData = bData;
-    real_matrix_mult_at_b_a_dsp(&A, &B, &C, 0);
-
-    S.numRows = 1;
-    S.numCols = 4;
-    S.pData = sData;
-	Ac.numRows = 4;
-	Ac.numCols = 4;
-	Ac.pDataReal = (float*)aData;
-	Ac.pDataImag = (float*)aImData;
-    Uc.numRows = 4;
-	Uc.numCols = 4;
-	Uc.pDataReal = (float*)uData;
-	Uc.pDataImag = (float*)uImData;
-	Bc.numRows = 4;
-	Bc.numCols = 4;
-	Bc.pDataReal = (float*)bData;
-	Bc.pDataImag = (float*)bImData;
-    complex_a_minus_u_s_ut_dsp(&Ac, &Uc, &S, &Bc, &norm, 0);
-	//inv_dsp(&Ac, &Bc, 0);
-	/*float aData[2*3] =
-	{
-		1.5, 4.6, 7.4,
-		8.1, 0.4, 3.5
-	};
-
-	float aImData[2*3] =
-	{
-		2.6, 1.3, 0.8,
-		5.8, 9.2, 7.3
-	};
-
-	float bData[4*3] =
-	{
-		4.3, 9.5, 2.8,
-		1.6, 3.3, 2.2,
-		1.7, 5.6, 4.1,
-		0.3, 6.0, 2.8
-	};
-
-
-	float bImData[4*3] =
-	{
-		0.3, 2.7, 0.5,
-		4.2, 2.2, 4.5,
-		8.1, 0.4, 1.6,
-		4.2, 6.6, 2.8
-	};
-
-	float cData[2*4], cImData[2*4];
-
-	Matrix_t A, B, C;
-	CMatrix_t Ac, Bc, Cc;
-	Ac.numRows = 2;
-	Ac.numCols = 3;
-	Ac.pDataReal = aData;
-	Ac.pDataImag = aImData;
-	Bc.numRows = 4;
-	Bc.numCols = 3;
-	Bc.pDataReal = bData;
-	Bc.pDataImag = bImData;
-	Cc.numRows = 2;
-	Cc.numCols = 4;
-	Cc.pDataReal = cData;
-	Cc.pDataImag = cImData;
-
-	A.numRows = 2;
-	A.numCols = 3;
-	A.pData = aData;
-	B.numRows = 4;
-	B.numCols = 3;
-	B.pData = bData;
-	C.numRows = 2;
-	C.numCols = 4;
-	C.pData = cData;
-
-	//real_matrix_mult_left_transp_dsp(&A, &B, 1.2f, &C, 0);
-	complex_matrix_mult_right_transp_dsp(&Ac, &Bc, &Cc, 0);
-	//real_matrix_mult_dsp(&A, &B, 1.2f, &C, 0);
-	//complex_matrix_mult_dsp(&Ac, &Bc, 1.0f, 0.0f, &Cc, 0);
-     */
-     unsigned int start, finish, dt;
-     float t;
+	unsigned int start, finish, dt;
+	float t;
 
 #define N 20
 
-	REAL_TYPE realA[N*N] =
+	static REAL_TYPE realA[N*N] =
 	{
 		0.999765, 0.991914, 0.872148, 0.408834, 0.993450, 0.971530, 0.812188, 0.304506, 0.974776, 0.939018, 0.742083, 0.196388, 0.943995, 0.894795, 0.662712, 0.085803, 0.901397, 0.839398, 0.575070, -0.025853,
 		0.991914, 1.000521, 0.927604, 0.521792, 0.999905, 0.994207, 0.880097, 0.423354, 0.995441, 0.975506, 0.821602, 0.319640, 0.978568, 0.944703, 0.752851, 0.211918, 0.949443, 0.902077, 0.674701, 0.101553,
@@ -159,7 +36,7 @@ int main(void)
 		-0.025853, 0.101553, 0.466151, 0.901649, 0.085803, 0.211918, 0.561932, 0.944270, 0.196388, 0.319640, 0.650699, 0.975084, 0.304506, 0.423354, 0.731325, 0.993771, 0.408834, 0.521792, 0.802829, 1.000075
 	};
 
-	REAL_TYPE imagA[N*N] =
+	static REAL_TYPE imagA[N*N] =
 	{
 		0.000000, -0.127230, -0.488805, -0.912405, -0.111501, -0.237079, -0.583046, -0.952318, -0.221624, -0.343971, -0.670007, -0.980341, -0.328968, -0.446575, -0.748599, -0.996118, -0.432220, -0.543598, -0.817854, -0.999461,
 		0.127230, 0.000000, -0.374015, -0.853298, 0.015792, -0.111587, -0.475154, -0.906181, -0.095841, -0.221788, -0.570360, -0.947748, -0.206275, -0.329227, -0.658445, -0.977476, -0.314151, -0.432555, -0.738324, -0.995004,
@@ -210,8 +87,6 @@ int main(void)
 	U.numCols = 1;
 	U.pDataReal = realU[0];
 	U.pDataImag = imagU[0];
-
-//	inv(&A, &AInv);
 
 	real_new(1, N, &S);
 	complex_new(N, N, &U);

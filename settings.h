@@ -1,7 +1,7 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
-#define VECTOR_MAX_SIZE 20
+#define VECTOR_MAX_SIZE 49
 #define MATRIX_MAX_SIZE VECTOR_MAX_SIZE*VECTOR_MAX_SIZE
 
 #define PREALLOCATION
@@ -26,5 +26,5 @@
 #define DSP_OPTIMIZATION_FULL
 #endif // WIN32
 
-#define TEST_RESULT
+//#define TEST_RESULT
 #endif // SETTINGS_H

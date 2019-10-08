@@ -21,6 +21,7 @@ void swap_ptr(void** a, void** b)
 	*b = t;
 }
 
+#ifndef DSP_OPTIMIZATION_FULL
 void special_sort_ascending(REAL_TYPE *array, int n, int* indices)
 // сортировка массива элементов REAL_TYPE пузырьковым методом
 // в качестве дополнительного выходного аргумента также получаем массив индексов
@@ -42,6 +43,7 @@ void special_sort_ascending(REAL_TYPE *array, int n, int* indices)
 		}
 	}
 }
+#endif // !DSP_OPTIMIZATION_FULL
 
 void special_sort_descending(REAL_TYPE *array, int n, int* indices)
 // сортировка массива элементов REAL_TYPE пузырьковым методом
@@ -65,6 +67,7 @@ void special_sort_descending(REAL_TYPE *array, int n, int* indices)
 	}
 }
 
+#ifndef DSP_OPTIMIZATION_FULL
 int find_max(REAL_TYPE *array, int n, REAL_TYPE *max)
 {
 	int res = 0, i;
@@ -79,3 +82,4 @@ int find_max(REAL_TYPE *array, int n, REAL_TYPE *max)
 	}
 	return res;
 }
+#endif // !DSP_OPTIMIZATION_FULL

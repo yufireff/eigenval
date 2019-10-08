@@ -1,10 +1,12 @@
 #include "MatrixDsp.h"
+#include "settings.h"
 
 #ifdef DSP_OPTIMIZATION
 
 #include <string.h>
 #include "dsp.h"
 
+#ifndef DSP_OPTIMIZATION_FULL
 int complex_matrix_mult_dsp(const CMatrix_t* a, const CMatrix_t* b, REAL_TYPE factor_re, REAL_TYPE factor_im, CMatrix_t* res, int numDsp)
 {
 	init_dsp(numDsp);
@@ -78,6 +80,7 @@ int real_matrix_mult_left_transp_dsp(const Matrix_t* a, const Matrix_t* b, REAL_
 
 	return MATRIX_SUCCESS;
 }
+#endif // !DSP_OPTIMIZATION_FULL
 
 int complex_matrix_mult_left_transp_dsp(const CMatrix_t* a, const CMatrix_t* b, CMatrix_t* res, int numDsp)
 {
@@ -100,6 +103,7 @@ int complex_matrix_mult_left_transp_dsp(const CMatrix_t* a, const CMatrix_t* b, 
 	return MATRIX_SUCCESS;
 }
 
+#ifndef DSP_OPTIMIZATION_FULL
 int complex_matrix_mult_right_transp_dsp(const CMatrix_t* a, const CMatrix_t* b, CMatrix_t* res, int numDsp)
 {
 	init_dsp(numDsp);
@@ -156,12 +160,11 @@ int complex_a_minus_u_s_ut_dsp(const CMatrix_t* a, const CMatrix_t* u, const Mat
 
 	return MATRIX_SUCCESS;
 }
-
+#endif // !DSP_OPTIMIZATION_FULL
 #else // DSP_OPTIMIZATION
 
 #include "matrix.h"
 #include "MatrixSpecial.h"
-
 int complex_matrix_mult_dsp(const CMatrix_t* a, const CMatrix_t* b, REAL_TYPE factor_re, REAL_TYPE factor_im, CMatrix_t* res, int numDsp)
 {
 	CMatrix_t copy;
@@ -214,8 +217,10 @@ int real_matrix_mult_at_b_a_dsp(const Matrix_t* a, const Matrix_t* b, Matrix_t* 
 	return real_matrix_mult_at_b_a(a, b, res);
 }
 
+#ifdef TEST_RESULT
 int complex_a_minus_u_s_ut_dsp(const CMatrix_t* a, const CMatrix_t* u, const Matrix_t* s, CMatrix_t *res, float *norm, int numDsp)
 {
 	return complex_a_minus_u_s_ut(a, u, s, res, norm);
 }
-#endif // DSP_OPTIMIZATION
+#endif // TEST_RESULT
+#endif // !DSP_OPTIMIZATION
